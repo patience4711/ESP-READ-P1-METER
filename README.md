@@ -1,2 +1,47 @@
 # ESP-READ-P1-METER
-read p1 meter software with an esp8266
+
+The purpose of this project is to read data from a so called smart meter via its serial port. The program reads the data and display's it on its webinterface. Moreover,  the data is transmitted via http and mosquitto. 
+
+I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. 
+The program has a lot of smart features. All settings can be done via the webinterface. Because the program uses the normal serial port to communicaste with the P1 meter, it has a console that can be used to call some processes and watch the output. 
+See the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a> for information on building it, the working, etc. 
+
+This program runs on a nodemcu but in future ther will be a versin for ESP32.
+
+## compile this sketch
+You can use the provided binary but if you must compile it yourself: Use arduino ide with the esp822 version 2.7.1 installed under boardmanager. The ota updates won't work with other versons.
+<br>Please note: by popular demand I have published the code here but i do not feel responsible for problems as to compiling. Impossible for me to know why it doesn't compile in your situation.
+
+## downloads
+july 26 2023: There is a new version 0_0 available.<br> 
+Download [ESP-P1METER-v0_0](hn)<br>
+
+<br>In case someone wants to print the housing, here is an [stl file](https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/blob/main/ESP-ECU-housing.zip)
+This is for a nodemcu board 31x58mm.
+
+## features
+- Simply to connect to your wifi
+- automatic polling or on demand via mqtt or http
+- data can be requested via http and mosquitto
+- There are 4 diffe
+- Fast asyc webserver
+- a very smart on-line console to send commands and debugging
+- Smart timekeeping
+- A lot of system info on the webpage
+
+## the hardware
+It is nothing more than an esp device like nodemcu, wemos or its relatives. The other materials are
+- a prepared cable with an 6-pins rj11 plug.
+- a 10K resistor to pullup the RX pin on the meter
+- a capacity (to buffer the 5v supply from the meter).
+
+For info on how to build and use it, please see the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a>
+
+![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)
+
+## how does it work
+The P1-meter spits out date avery 10 seconds, the has the form of a textdocument. This document consists of lines that each represent a value.
+The program reads the input line after line. Each line is evaluated on certain characteristics te determine what value it represents. 
+Then the value is extracted.
+
+## changelog ##
