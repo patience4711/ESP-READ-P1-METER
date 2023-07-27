@@ -1,12 +1,24 @@
 # ESP-READ-P1-METER
 
-The purpose of this project is to read data from a so called smart meter via its serial port. The program reads the data and display's it on its webinterface. Moreover,  the data is transmitted via http and mosquitto. 
+The purpose of this project is to read data from a so called smart meter (model Sagecom T210 ESMR5) via its serial port. The program reads the data and display's it on its webinterface. Moreover,  the data is transmitted via http and mosquitto. So that we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
+
+![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)<br>
 
 I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. 
-The program has a lot of smart features. All settings can be done via the webinterface. Because the program uses the normal serial port to communicaste with the P1 meter, it has a console that can be used to call some processes and watch the output. 
+The program has a lot of smart features. All settings can be done via the webinterface. Because the program uses the normal serial port on the ESP to communicate with the P1 meter, it has a web console that can be used to call some processes and watch the output. 
 See the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a> for information on building it, the working, etc. 
 
-This program runs on a nodemcu but in future ther will be a versin for ESP32.
+This program runs on a nodemcu but in future there will be a version for ESP32.
+
+## status
+The software has been tested with a fake telegram that is fed to the serial port with a loopback wire. That works good so the basic 'engine' is oke. I am waiting for a 6-core wire with the rj11 that i ordered. Then i can test with my own meter (Sagemcom T210)
+
+##links
+Here are some links to the projects where i got my inspiration.
+ * http://domoticx.com/arduino-p1-poort-telegrammen-uitlezen/
+ * http://domoticx.com/p1-poort-slimme-meter-hardware/
+ * https://github.com/romix123/P1-wifi-gateway/blob/main/src/P1WG2022current.ino
+ * http://www.gejanssen.com/howto/Slimme-meter-uitlezen/#mozTocId935754
 
 ## compile this sketch
 You can use the provided binary but if you must compile it yourself: Use arduino ide with the esp822 version 2.7.1 installed under boardmanager. The ota updates won't work with other versons.
@@ -36,8 +48,6 @@ It is nothing more than an esp device like nodemcu, wemos or its relatives. The 
 - a capacity (to buffer the 5v supply from the meter).
 
 For info on how to build and use it, please see the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a>
-
-![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)
 
 ## how does it work
 The P1-meter spits out date avery 10 seconds, the has the form of a textdocument. This document consists of lines that each represent a value.
