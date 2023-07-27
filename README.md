@@ -6,14 +6,14 @@ The purpose of this project is to read data from a so called smart meter (model 
 
 I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. 
 The program has a lot of smart features. All settings can be done via the webinterface. Because the program uses the normal serial port on the ESP to communicate with the P1 meter, it has a web console that can be used to call some processes and watch the output. 
-See the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a> for information on building it, the working, etc. 
+See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) for information on building it, the working, etc. 
 
 This program runs on a nodemcu but in future there will be a version for ESP32.
 
 ## status
 The software has been tested with a fake telegram that is fed to the serial port with a loopback wire. That works good so the basic 'engine' is oke. I am waiting for a 6-core wire with the rj11 that i ordered. Then i can test with my own meter (Sagemcom T210)
 
-##links
+## links
 Here are some links to the projects where i got my inspiration.
  * http://domoticx.com/arduino-p1-poort-telegrammen-uitlezen/
  * http://domoticx.com/p1-poort-slimme-meter-hardware/
