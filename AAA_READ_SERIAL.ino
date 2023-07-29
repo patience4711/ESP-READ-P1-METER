@@ -24,12 +24,7 @@ bool readTelegram() {
          return false;
       }
   
-      console_Log( "length of testGram (incl !8F46 and a '\'= " + String(testLength) );
-      if (diagNose) 
-      {
-      ws.textAll("length of testGram (incl !8F46 and a '\'= " + String(testLength) );
-      delay(100);
-      }
+     console_Log( "length of testGram (incl !8F46 and a '\'= " + String(testLength) );
      int lengte = strlen(teleGram);
      console_Log("teleGram length = " + String(lengte));
   
