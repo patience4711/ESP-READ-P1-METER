@@ -11,10 +11,11 @@ See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) f
 This program runs on a nodemcu but in future there will be a version for ESP32.
 
 ## status
-The software has been tested with a fake telegram that is fed to the serial port with a loopback wire. That works good so the basic 'engine' is oke. I am waiting for a 6-core wire with the rj11 that i ordered. Then i can test with my own meter (Sagemcom T210)
+The software has been tested with a fake telegram that is fed to the serial port with a loopback wire. That works good so the basic 'engine' is oke. I am waiting for a 6-core wire with the rj11 that i ordered. Then i can test with my own meter (Sagemcom T210).
+I uploaded the process of reading the telegram, it explains how this works.
 
 ## links
-Here are some links to the projects where i got my inspiration.
+Here are some links to the projects where i got my inspiration (thanks to all for the good work they did.)
  * http://domoticx.com/arduino-p1-poort-telegrammen-uitlezen/
  * http://domoticx.com/p1-poort-slimme-meter-hardware/
  * https://github.com/romix123/P1-wifi-gateway/blob/main/src/P1WG2022current.ino
