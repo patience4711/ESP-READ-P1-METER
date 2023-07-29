@@ -12,6 +12,7 @@ This program runs on a nodemcu but in future there will be a version for ESP32.
 
 ## status
 The software has been tested with a fake telegram that is fed to the serial port with a loopback wire. That works good so the basic 'engine' is oke. I am waiting for a 6-core wire with the rj11 that i ordered. Then i can test with my own meter (Sagemcom T210).
+
 I uploaded the process of reading the telegram, it explains how this works.
 
 ## links
