@@ -171,6 +171,7 @@ float returnFloat(char what[24], uint8_t len, uint8_t bgn, uint8_t count) {
 }
 
 void console_Log(String toLog) {
+  // diagNose = true when the console is opened  
   if(diagNose)
   {
     ws.textAll(toLog);
