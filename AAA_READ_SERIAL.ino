@@ -73,7 +73,7 @@ bool findStartinSerial()
 
 void readTelegramInArray() 
 {
-// this function reads the serial port int an char array
+// this function reads the serial port into a char array
 // it is called when the startsign has been found 
         // first cleanup
         memset(teleGram, 0, sizeof(teleGram)); //zero out 
