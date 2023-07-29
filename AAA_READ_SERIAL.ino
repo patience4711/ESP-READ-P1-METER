@@ -200,15 +200,15 @@ char what[24];
 }
 
 
-float returnFloat(char what[24], uint8_t len, uint8_t bgn, uint8_t digits) { 
+float returnFloat(char what[24], uint8_t len, uint8_t bgn, uint8_t count) { 
    char extract[len+1];
-   char tail[16];
+   char number[16];
    strncpy(extract, strstr(teleGram, what), len);
    // now we have an array starting with the line that contains 'what'
    // Serial.println("extract = " + String(extract));
    // we copy the characters representing the value in tail
-   strncpy(tail, extract + bgn, digits);
-  //  Serial.println("tail= " + String(tail));
-  // now we have the number, convert it to a float
-  return atof(tail);
+   strncpy(number, extract + bgn, count);
+   //  Serial.println("tail= " + String(tail));
+   // now we have the number, convert it to a float
+   return atof(number);
 }
