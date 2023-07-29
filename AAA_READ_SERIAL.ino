@@ -10,17 +10,17 @@ bool readTelegram() {
       if(findStartinSerial() ) 
       { 
           readTelegramInArray();
+          console_Log("back in readTelegram");
+          
           if(diagNose ) {
-             ws.textAll("back in readTelegram");
-             delay(100);
              ws.textAll(String(teleGram));
              delay(100);
-             }
+           }
           // now we have an aray that contains the whole telegram.
           // And we have na array that contains the CRC
           // can we find a match
       } else {
-         if(diagNose ) ws.textAll("no startsign found");
+         console_Log("no startsign found");
          return false;
       }
   
