@@ -7,18 +7,18 @@ bool readTelegram() {
  * if correct extract the values of interest
  * and we can serve the array at request
  */
-      if(findStartinSerial() ) 
-      { 
-          readTelegramInArray();
-          console_Log("back in readTelegram");
-          
-          if(diagNose ) {
-             ws.textAll(String(teleGram));
-             delay(100);
-           }
-          // now we have an aray that contains the whole telegram.
-          // And we have na array that contains the CRC
-          // can we find a match
+    if(findStartinSerial() ) 
+    { 
+        readTelegramInArray();
+        console_Log("back in readTelegram");
+        
+        if(diagNose ) {
+           ws.textAll(String(teleGram));
+           delay(100);
+         }
+        // now we have an aray that contains the whole telegram.
+        // And we have na array that contains the CRC
+        // can we find a match
       } else {
          console_Log("no startsign found");
          return false;
@@ -38,7 +38,7 @@ bool readTelegram() {
  
     if(strtol(readCRC, NULL, 16) == calculatedCRC) //do the crc's match
     {
-    console_Log("crc is oke, decoding..");
+    console_Log("crc is oke, now extract values..");
     extractTelegram();
     sendMqtt(false); // send pi meter format to domoticz
     sendMqtt(true);  // send gas to domoticz
@@ -62,27 +62,24 @@ bool findStartinSerial()
               if (Serial.read() == '/') { 
                   ESP.wdtEnable(1);
                   console_Log("found startsign");
-//                  if(diagNose) {
-//                     ws.textAll("found startsign");
-//                     delay(100); 
-//                     }
                   return true;
               }
           }
-
        }
-       // so if we are here, we did'nt found the start sign.
      
-       }
-       return false;
+    }
+    return false; // did not find the startsign
 }
 
 void readTelegramInArray() 
 {
 // this function reads the serial port int an char array
 // it is called when the startsign has been found 
-char inByte[2];
-teleGram[0]='/'; // add the startsign; this character has been read already
+        // first cleanup
+        memset(teleGram, 0, sizeof(teleGram)); //zero out 
+        delayMicroseconds(250);
+        char inByte[2];
+        teleGram[0]='/'; // add the startsign; this character has been read already
 
         while (Serial.available() )
         {
