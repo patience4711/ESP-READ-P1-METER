@@ -38,15 +38,14 @@ bool readTelegram() {
  
     if(strtol(readCRC, NULL, 16) == calculatedCRC) //do the crc's match
     {
-    console_Log("crc is oke, now extract values..");
-    extractTelegram();
-    sendMqtt(false); // send pi meter format to domoticz
-    sendMqtt(true);  // send gas to domoticz
-    return true;
-    // we can keep the telegram to answer a request for it
+        console_Log("crc is oke, now extract values..");
+        extractTelegram();
+        sendMqtt(false); // send pi meter format to domoticz
+        sendMqtt(true);  // send gas to domoticz
+        return true;
     } else {
-       console_Log("crc failed, exitting..");
-       return false;
+        console_Log("crc failed, exitting..");
+        return false;
     }
 }
 
