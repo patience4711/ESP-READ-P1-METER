@@ -4,7 +4,8 @@ The purpose of this project is to read data from a so called smart meter (model 
 
 ![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)<br>
 
-I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. 
+I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. Since the ESP has only one reliable working hardware serial port, this port is dedicated to the serial communication. For the debugging we can use a web console just like in my other projects where the serial port is dedicated to the zigbee module.
+
 The program has a lot of smart features. All settings can be done via the webinterface. Because the program uses the normal serial port on the ESP to communicate with the P1 meter, it has a web console that can be used to call some processes and watch the output. 
 See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) for information on building it, the working, etc. 
 
