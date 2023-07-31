@@ -53,8 +53,8 @@ It is nothing more than an esp device like nodemcu, wemos or its relatives. The 
 For info on how to build and use it, please see the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a>
 
 ## how does it work
-The P1-meter spits out date avery 10 seconds, this has the form of a textdocument. This document consists of lines that each represent a value.
-The program reads the serial port until a startcharacter is found. Now the next incoming bytes are stored in a char array until the endcharacter is encountered. 
+The P1-meter spits out date every 10 seconds, this has the form of a textdocument called a telegram. This document consists of lines that each represent a value.
+It starts with a "/" and ends with a "!". The program reads the serial port until the "/" is found. Now the next incoming bytes are stored in a char array until the endcharacter is encountered. 
 Next the checksum calculation is done and when the char array is approved, the interesting values can be extracted.
 
 ## changelog ##
