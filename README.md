@@ -1,12 +1,12 @@
 # ESP-READ-P1-METER
 
-The purpose of this project is to read data from a so called smart meter (model Sagecom T210 ESMR5) via its serial port. The program reads the data and display's it on its webinterface. Moreover,  the data is transmitted via http and mosquitto. So that we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
+The purpose of this project is to read data from a so called smart meter (model Sagecom T210 ESMR5) via its serial port. The program reads the data and display's it on its webinterface. In addition, the data is transmitted via http and mosquitto. So that we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
 
 ![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)<br>
 
-I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. Since the ESP has only one reliable working hardware serial port, this port is dedicated to the serial communication. For the debugging we can use a web console just like in my other projects where the serial port is dedicated to the zigbee module.
+I know this has been done before but since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. So it inherits many nice features from the othe projects. 
 
-The program has a lot of smart features. All settings can be done via the webinterface. Because the program uses the normal serial port on the ESP to communicate with the P1 meter, it has a web console that can be used to call some processes and watch the output. 
+The program has a lot of smart features. All settings can be done via the webinterface. Because the ESP has only one reliable working hardware serial port, this port is dedicated to the serial communication with the p1 meter. For the debugging we can use a web console just like in my other projects where the serial port is dedicated to the zigbee module. In the console we can call some processes and watch the output. 
 See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) for information on building it, the working, etc. 
 
 This program runs on a nodemcu but in future there will be a version for ESP32.
@@ -38,7 +38,7 @@ This is for a nodemcu board 31x58mm.
 - Simply to connect to your wifi
 - automatic polling or on demand via mqtt or http
 - data can be requested via http and mosquitto
-- There are 4 diffe
+- data is displayed on the frontpage, as a monthly report and as the original telegram.
 - Fast asyc webserver
 - a very smart on-line console to send commands and debugging
 - Smart timekeeping
