@@ -173,12 +173,12 @@ float returnFloat(char what[24], uint8_t len, uint8_t bgn, uint8_t count) {
    char extract[len+1];
    char number[16];
    strncpy(extract, strstr(teleGram, what), len);
-   // now we have an array starting with the line that contains 'what'
+   // now we have an array 'extract' starting with the line that contains 'what'
    // Serial.println("extract = " + String(extract));
-   // we copy the characters representing the value in tail
+   // we copy the part representing the value to 'number'
    strncpy(number, extract + bgn, count);
    //  Serial.println("tail= " + String(tail));
-   // now we have the number, convert it to a float
+   // now we have the number, convert it to a float and return
    return atof(number);
 }
 
@@ -190,6 +190,9 @@ void console_Log(String toLog) {
   }
 }
 
+// ********************************************************************************
+//                     send the values via mosquitto
+// ********************************************************************************
 void sendMqtt(bool gas) {
 
 if(Mqtt_Format == 0) return;  
@@ -216,11 +219,7 @@ if(Mqtt_Format == 0) return;
         snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":0,\"svalue\":\"%.3f;\"}", gas_Idx, mGAS);
        }
     case 2:
-       //if(!gas) {
-        snprintf(toMQTT, sizeof(toMQTT), "{\"econ_lt\":%.2f,\"econ_ht\":%.2f,\"eret_ht\":%.2f,\"eret_lt\":%.2f,\"actualp_con\":%.2f,\"actualp_ret\":%.2f,\"gas\":%.3f}" , ECON_LT, ECON_HT, ERET_LT, ERET_HT, PACTUAL_CON, PACTUAL_RET, mGAS);
-      // } else {
-     //   snprintf(toMQTT, sizeof(toMQTT), "{\"mgas\":%.3f;}", mGAS);
-      // }
+       snprintf(toMQTT, sizeof(toMQTT), "{\"econ_lt\":%.2f,\"econ_ht\":%.2f,\"eret_ht\":%.2f,\"eret_lt\":%.2f,\"actualp_con\":%.2f,\"actualp_ret\":%.2f,\"gas\":%.3f}" , ECON_LT, ECON_HT, ERET_LT, ERET_HT, PACTUAL_CON, PACTUAL_RET, mGAS);
        break;
     case 3:
        snprintf(toMQTT, sizeof(toMQTT), "field1=%.3f&field2=%.3f&field3=%.3f&field4=%.3f&field5=%.0f&field6=%.0f&field7=%.3f&status=MQTTPUBLISH" ,ECON_LT, ECON_HT, ERET_LT, ERET_HT, PACTUAL_CON, PACTUAL_RET, mGAS);
