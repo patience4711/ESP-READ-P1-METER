@@ -46,9 +46,10 @@ This is for a nodemcu board 31x58mm.
 
 ## the hardware
 It is nothing more than an esp device like nodemcu, wemos or its relatives. The other materials are
-- a prepared cable with an 6-pins rj11 plug.
-- a 10K resistor to pullup the RX pin on the meter
-- a capacity (to buffer the 5v supply from the meter).
+- a prepared cable with an 6-pins RJ-11 plug.
+- a 10K resistor to pullup the RX pin on the meter.
+- optional a capacity (to buffer the 5v supply from the meter).
+- optional a signal inverter (required for some type of p1 meters)
 
 For info on how to build and use it, please see the <a href='https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/wiki'>WIKI</a>
 
