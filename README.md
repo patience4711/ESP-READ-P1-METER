@@ -28,7 +28,7 @@ You can use the provided binary but if you must compile it yourself: Use arduino
 <br>Please note: by popular demand I have published the code here but i do not feel responsible for problems as to compiling. Impossible for me to know why it doesn't compile in your situation.
 
 ## downloads
-july 26 2023: There is a new version 0_0 available.<br> 
+july 26 2023: There is a new version 0_b available.<br> 
 Download [ESP-P1METER-v0_b](https://github.com/patience4711/ESP-READ-P1-METER/blob/main/ESP-P1METER-v0_b.bin)<br>
 
 <br>In case someone wants to print the housing, here is an [stl file](https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/blob/main/ESP-ECU-housing.zip)
