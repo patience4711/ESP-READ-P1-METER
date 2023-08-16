@@ -29,7 +29,7 @@ You can use the provided binary but if you must compile it yourself: Use arduino
 
 ## downloads
 july 26 2023: There is a new version 0_0 available.<br> 
-Download [ESP-P1METER-v0_0](hn)<br>
+Download [ESP-P1METER-v0_b]([hn](https://github.com/patience4711/ESP-READ-P1-METER/blob/main/ESP-P1METER-v0_b.bin)<br>
 
 <br>In case someone wants to print the housing, here is an [stl file](https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/blob/main/ESP-ECU-housing.zip)
 This is for a nodemcu board 31x58mm.
