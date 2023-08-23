@@ -12,7 +12,7 @@ See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) f
 This program runs on a nodemcu but in future there will be a version for ESP32.
 
 ## status
-The software has been tested with a fake telegram that is fed to the serial port with a loopback wire. That works good so the basic 'engine' is oke. I am waiting for a 6-core wire with the rj11 that i ordered. Then i can test with my own meter (Sagemcom T210).
+The software has been tested with the help of a testpoll at boot. Before connect to wifi, this test writes the telegram (when received) and a small log to spiffs. So even when there is no wifi at the locastion of the meter, we can see that it works. Via the serial console the telegram can be examined and some tests can be done with the file, like decode it. That works good so the basic 'engine' is oke. 
 
 I uploaded the code that takes care of reading the telegram, it explains how this works.
 
@@ -28,8 +28,8 @@ You can use the provided binary but if you must compile it yourself: Use arduino
 <br>Please note: by popular demand I have published the code here but i do not feel responsible for problems as to compiling. Impossible for me to know why it doesn't compile in your situation.
 
 ## downloads
-july 26 2023: There is a new version 0_b available.<br> 
-Download [ESP-P1METER-v0_b](https://github.com/patience4711/ESP-READ-P1-METER/blob/main/ESP-P1METER-v0_b.bin)<br>
+july 26 2023: There is a new version 0_c available.<br> 
+Download [ESP-P1METER-v0_b](https://github.com/patience4711/ESP-READ-P1-METER/blob/main/ESP-P1METER-v0_c.bin)<br>
 
 <br>In case someone wants to print the housing, here is an [stl file](https://github.com/patience4711/read-APSystems-YC600-QS1-DS3/blob/main/ESP-ECU-housing.zip)
 This is for a nodemcu board 31x58mm.
