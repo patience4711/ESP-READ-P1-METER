@@ -1,119 +1,142 @@
-// the meter transmits every second so we could read until we find the start sign "/"
-// And drop everything before that
-
-bool readSerial(bool testModus) {
-/* this function tries to read the serial output from the meter into a char arry  
- * we can verify this with the crc 
- * if correct extract the values of interest
- * and we can serve the array at request
+/* this program works as follows: first make the enable pin high
+ * next make the serial buffer empty if there is data
+ * mow wait untill data becomes available
+ * start reading until the startsigb is found (likely this is the fst byte)
+ * read the next bytes until the endsign is found.
+ * if success the crc is checked and if oke the values are extracted from the telegram 
+ * and send via mosquitto
  */
-    if(findStartinSerial() ) 
-    { 
-        readTelegramToArray(testModus);
-        
-        console_Log("back in readTelegram");
-        
-        if(diagNose ) {
-           ws.textAll(String(teleGram));
-           delay(100);
-         }
-        // now we have an aray that contains the whole telegram.
-        // And we have na array that contains the CRC
-        // can we find a match ?
-      } else {
-         errorCode = 11;
-         //console_Log("no startsign found");
-         return false;
-      }
-  
-     console_Log( "testGram length (incl !8F46 and a backslash) = " + String(testLength) );
-     int lengte = strlen(teleGram);
-     console_Log("teleGram length = " + String(lengte));
-  
-     // now we have the array and can calculate the crc
-     int calculatedCRC = CRC16(0x0000, (unsigned char *) teleGram, lengte); 
-     console_Log("the calculated crc = " + String(calculatedCRC));
-  
-     console_Log("strol of readCRC = " + String(strtol(readCRC, NULL, 16))); //8F46
 
-    // readCRC 8F46 should be 36678 
- 
-    if(strtol(readCRC, NULL, 16) == calculatedCRC) //do the crc's match
-    {
-    console_Log("crc is oke, now extract values..");
-    extractTelegram();
-    sendMqtt(false); // send pi meter format to domoticz
-    if (Mqtt_Format == 1) sendMqtt(true);  // send gas separate to domoticz
-    polled = true;
-    errorCode = 0;
-    return true;
-    
-    } else {
-       console_Log("crc failed, exitting..");
-       polled = false;
-       return false;
+void meterPoll() {
+  Serial.println("meterPoll");
+  // if we don't have the testfiles we write them (in decode)
+  digitalWrite(P1_ENABLE, HIGH); 
+   if( read_into_array() ) {
+      //we have a telegram
+      
+      digitalWrite(P1_ENABLE, LOW);
+      decodeTelegram(); 
+      sendMqtt(false);
+      sendMqtt(true);
+    } 
+    // when done, write the logfile if not exists
+    strcat(logChar, "\npoll done");
+    if( !LittleFS.exists("/logChar.txt") ) {
+          logCharsave(); // an existing logfile is not overwritten
     }
+    // if the testFile still not exists we write it now
+    if( !LittleFS.exists("/testFile.txt") ) {
+         testFilesave(); // an existing logfile is not overwritten
+    }
+   Serial.println("meterPoll done");
+   digitalWrite(P1_ENABLE, LOW);
 }
 
-bool findStartinSerial()
-{
-    // keep reading serial until the start sign is found. Normally this cannot take more than 10 seconds
-    // we do this a couple of times. One cycle = 2,5 seconds so 5 times would be enough
-    for (int z=0; z< 6; z++ ) { // this loop takes
-      ESP.wdtDisable();
-      yield();
-      if( waitSerialAvailable() ) {  //this takes 2.5 seconds
-          while ( Serial.available() ) {
-
-              //can we read the bytes until the start sign?
-              if (Serial.read() == '/') { 
-                  ESP.wdtEnable(1);
-                  console_Log("found startsign");
-                  return true;
-              }
-          }
-       }
-     
-    }
-    ESP.wdtEnable(1);
-    console_Log("no startsign found !!!");
-    errorCode = 11;
-    return false; // did not find the startsign
-}
-
-void readTelegramToArray(bool testModus) 
-{
-// this function reads the data from serial port into a char array
-// it is called when the startsign has been found 
-        // first cleanup
-        memset(teleGram, 0, sizeof(teleGram)); //zero out 
+bool read_into_array() {
+    int byteCounter = 0;
+    char rep[20]={0};
+    char inByte[2];
+    int Bytes=0;
+    polled = false;
+    // start waiting until serial available   
+    waitSerialAvailable(5);
+    // waste the serial buffer so that we start reading at the beginning of the telegram    
+    empty_serial();
+    // now we wait again until something is avialable
+    if ( waitSerialAvailable(5) ) {
+        memset(logChar, 0, sizeof(logChar));
         delayMicroseconds(250);
-        char inByte[2];
-        teleGram[0]='/'; // add the startsign; this character has been read already
-
-        while (Serial.available() )
+        memset(teleGram, 0, sizeof(teleGram));
+        delayMicroseconds(250);
+        strcat(logChar, "\nstart");
+        while (Serial.available())
         {
-        ESP.wdtDisable();
-        Serial.readBytes(inByte, 1);
-        if (inByte[0] == '!' ) {
-           strncat( teleGram, inByte, 1);
-           console_Log("found the end sign");
-           // we need to read 4 more bytes (the crc) untill the \n and then stop
-           Serial.readBytes(readCRC, 4);
-           ESP.wdtEnable(1);
-           return;
-        } else { 
-          strncat (teleGram, inByte, 1);
+              Serial.readBytes(inByte, 1);
+              byteCounter ++;
+              if (inByte[0] == '/') { 
+                    sprintf(rep, "\nfound start at %d", byteCounter);
+                    strcat(logChar,rep);
+                    //Bytes = Serial.available(); // check how much is available
+                    //sprintf(rep, "\navail %d", Bytes);
+                    //strcat(logChar,rep);
+                    strncat(teleGram, inByte, 1); 
+                    // now we add the next 650 bytes to teleGram 
+                    // until we encounter the endsign
+                    for ( int x=0; x < 650; x++) {
+                       Serial.readBytes(inByte, 1);
+                       strncat( teleGram, inByte, 1);
+                       // catch the endsign
+                       if (inByte[0] == '!' ) {
+                           console_Log("found the end sign");
+                           strcat(logChar, "\nend sign");
+                           // we need to read 4 more bytes (the crc) until the \n and then stop
+                           Serial.readBytes(readCRC, 4);
+                           strcat(teleGram, readCRC);
+                           polled = true;
+                           return true;
+                        }   
+                     }
+               // if we are here, we read 650 characters more but no endsign has been found
+               strcat(logChar,"\nfs no end");
+               return false;              
+           }
+
+       // we terminate if more than 2000 bytes read
+       if ( byteCounter > 2000 ) {
+            strcat(logChar,"\n fs 2000 terminate");
+            return false;       
+           }
         }
-    // if we are testing we have to keep the serial buffer full
-    if(testModus == true) {
-        if(Serial.available() < 10 ) send_testGramChunk(); // for testing: make the serial buffer full again 
+   // if we are here, no startssign was found    
+      strcat(logChar, "\nno startsign");
+      return false;
+   }
+  // if we are here, no serial data was available
+  strcat(logChar, "\nno data");
+  return false;
+}  
+
+void decodeTelegram() {
+      if (polled) {
+        //we have a valid telegram, now we can decode it.
+        //if no testfiles, we write them first
+        if( !LittleFS.exists("/testFile.txt")) {
+            testFilesave(); // an existing file is not overwritten
+            //logCharsave(); // an existing file is not overwritten
         }
-    }     
-        ESP.wdtEnable(1);
+         int lengte = strlen(teleGram);
+         console_Log("teleGram length = " + String(lengte));
+         
+         // the crc = calculated over the telegram inc start and endsign, so without crc
+         // the teleGram contains the CRC so we terminate teleGram after the !
+         teleGram[lengte - 4] = '\0';
+         // now the teleGram is useless for testdecode so:
+         testTelegram = false;
+         int calculatedCRC = CRC16(0x0000, (unsigned char *) teleGram, lengte-4); 
+         
+         console_Log("the calculated crc = " + String(calculatedCRC));
+      
+         console_Log("strol of readCRC = " + String(strtol(readCRC, NULL, 16))); //8F46
+    
+        if(strtol(readCRC, NULL, 16) == calculatedCRC) //do the crc's match
+        {
+            console_Log("crc is correct, now extract values..");
+            strcat(logChar, "\ncrc ok");
+            extractTelegram();   
+            polled = true;
+            eventSend(2); // inform the webbpage that there is new data
+            console_Log("polled true");
+            return;
+        } else {
+            console_Log("crc is wrong, now extract values..");
+            strcat(logChar, "\ncrc false");
+            polled=false;
+            console_Log("not polled");
+            return;
+        }
+    }
+    
 }
-
-
 
 
 void extractTelegram() {
@@ -173,12 +196,12 @@ float returnFloat(char what[24], uint8_t len, uint8_t bgn, uint8_t count) {
    char extract[len+1];
    char number[16];
    strncpy(extract, strstr(teleGram, what), len);
-   // now we have an array 'extract' starting with the line that contains 'what'
+   // now we have an array starting with the line that contains 'what'
    // Serial.println("extract = " + String(extract));
-   // we copy the part representing the value to 'number'
+   // we copy the characters representing the value in tail
    strncpy(number, extract + bgn, count);
    //  Serial.println("tail= " + String(tail));
-   // now we have the number, convert it to a float and return
+   // now we have the number, convert it to a float
    return atof(number);
 }
 
@@ -190,9 +213,6 @@ void console_Log(String toLog) {
   }
 }
 
-// ********************************************************************************
-//                     send the values via mosquitto
-// ********************************************************************************
 void sendMqtt(bool gas) {
 
 if(Mqtt_Format == 0) return;  
@@ -218,6 +238,7 @@ if(Mqtt_Format == 0) return;
        } else {
         snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":0,\"svalue\":\"%.3f;\"}", gas_Idx, mGAS);
        }
+       break;
     case 2:
        snprintf(toMQTT, sizeof(toMQTT), "{\"econ_lt\":%.2f,\"econ_ht\":%.2f,\"eret_ht\":%.2f,\"eret_lt\":%.2f,\"actualp_con\":%.2f,\"actualp_ret\":%.2f,\"gas\":%.3f}" , ECON_LT, ECON_HT, ERET_LT, ERET_HT, PACTUAL_CON, PACTUAL_RET, mGAS);
        break;
@@ -229,4 +250,4 @@ if(Mqtt_Format == 0) return;
 
    // mqttConnect() checks first if we are connected, if not we connect anyway
    if(mqttConnect() ) MQTT_Client.publish ( Mqtt_send, toMQTT, reTain );
-}  
+}
