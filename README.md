@@ -11,10 +11,9 @@ See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) f
 
 This program runs on a nodemcu but in future there will be a version for ESP32.
 
-## status
-The software has been tested with the help of a testpoll at boot. Before connect to wifi, this test writes the telegram (when received) and a small log to spiffs. So even when there is no wifi at the locastion of the meter, we can see that it works. Via the serial console the telegram can be examined and some tests can be done with the file, like decode it. That works good so the basic 'engine' is oke. 
-
-I uploaded the code that takes care of reading the telegram, it explains how this works.
+## status and todo's
+The software has been tested on a Sagemcom T210 meter and works good.
+The next step is make it work with other meters. This is hard because i cannot test. The software is capable of reading the telegrams of other meters if they have an "open collector" port. The signal inversion is done in the software so no signal inverter is needed.  
 
 ## links
 Here are some links to the projects where i got my inspiration (thanks to all for the good work they did.)
@@ -38,11 +37,12 @@ This is for a nodemcu board 31x58mm.
 - Simply to connect to your wifi
 - automatic polling or on demand via mqtt or http
 - data can be requested via http and mosquitto
-- data is displayed on the frontpage, as a monthly report and as the original telegram.
-- Fast asyc webserver
-- a very smart on-line console to send commands and debugging
-- Smart timekeeping
-- A lot of system info on the webpage
+- data is displayed on the frontpage, as a monthly report.
+- we can see the telegram sent by the meter.
+- Fast asyc webserver.
+- a very smart on-line console to send commands and debugging.
+- Smart timekeeping.
+- A lot of system info on the webpage.
 
 ## the hardware
 It is nothing more than an esp device like nodemcu, wemos or its relatives. The other materials are
@@ -55,7 +55,7 @@ For info on how to build and use it, please see the <a href='https://github.com/
 
 ## how does it work
 The P1-meter spits out data every 10 seconds, this has the form of a textdocument called a telegram. This document consists of lines that each represent a value.
-It starts with a "/" and ends with a "!". The program reads the serial port until the "/" is found. Now the next incoming bytes are stored in a char array until the endcharacter is encountered. 
+It starts with a "/" and ends with a "!". The program reads the serial port until the "/" is found. Now the next incoming bytes are stored in a char array until the endcharacter is encountered. So now we have the telegram as a char array.
 Next the checksum calculation is done and when the char array is approved, the interesting values can be extracted.
 
 ## changelog ##
