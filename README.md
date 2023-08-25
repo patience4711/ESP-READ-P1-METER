@@ -1,6 +1,6 @@
 # ESP-READ-P1-METER
 
-The purpose of this project is to read data from a so called smart meter (model Sagecom T210 ESMR5) via its serial port. The program reads the data and display's it on its webinterface. In addition, the data is transmitted via http and mosquitto. So that we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
+The purpose of this project is to read data from a so called smart meter (model Sagecom 210 ESMR5) via its serial port. The program reads the data and display's it on its webinterface. In addition, the data is transmitted via http and mosquitto. So that we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
 
 ![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)<br>
 
