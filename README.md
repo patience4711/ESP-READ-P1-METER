@@ -13,7 +13,9 @@ This program runs on a nodemcu but in future there will be a version for ESP32.
 
 ## status and todo's
 The software has been tested on a Sagemcom T210 meter and works good.
-The next step is make it work with other meters. This is hard because i cannot test. The software is capable of reading the telegrams of other meters if they have an "open collector" port. The signal inversion is done in the software so no signal inverter is needed.  
+The next step is make it work with other meters. This is hard because i cannot test. The software is capable of reading the telegrams of other meters if they have an "open collector" port. The signal inversion is done in the software so no signal inverter is needed.
+
+I am working on a port to the ESP32 super mini. I am too far from my meter away so wifi doesn't work. So this ESP sends the meterdata via bluetooth.
 
 ## links
 Here are some links to the projects where i got my inspiration (thanks to all for the good work they did.)
