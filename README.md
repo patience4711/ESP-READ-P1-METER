@@ -1,6 +1,6 @@
 # ESP-READ-P1-METER
 
-The purpose of this project is to read data from a so called smart meter (model Sagecom 210 ESMR5) via its serial port. The program reads the data and display's it on its webinterface. In addition, the data is transmitted via http and mosquitto. So that we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
+The purpose of this project is to read data from a so called smart meter (model Sagecom 210 ESMR5) via its serial port. All we have to do is connect an ESP device (tested with nodemcu) via an rj11 cable to the serial port of the meter. (is use a cable that is 15m long). The data is made available via mosquitto or an API and is also diplaye on a webpage.  Now we can process the data in our domotica systems like 'Domotics' to display graphs and control switches.<br>
 
 ![frontpage](https://github.com/patience4711/ESP-READ-P1-METER/assets/12282915/bb65cf1f-f6bf-4e1c-ae48-c379628f3a7a)<br>
 
@@ -9,7 +9,7 @@ I know this has been done before but since i have other projects which partially
 The program has a lot of smart features. All settings can be done via the webinterface. Because the ESP has only one reliable working hardware serial port, this port is dedicated to the serial communication with the p1 meter. For the debugging we can use a web console just like in my other projects where the serial port is dedicated to the zigbee module. In the console we can call some processes and watch the output. 
 See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) for information on building it, the working, etc. 
 
-This program runs on a nodemcu but in future there will be a version for ESP32.
+This program runs on a nodemcu but in future there will be a version for ESP32-C3, not all ESP's can be powered by the meter.
 
 ## status and todo's
 The software has been tested on a Sagemcom T210 meter and works good.
