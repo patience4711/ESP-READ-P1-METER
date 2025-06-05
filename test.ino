@@ -5,21 +5,21 @@
 //// so now we try to remove the last 4 characters
 //
 //       int len1 = strlen(teleGram);
-//       console_Log("len1 = " + String(len1) );       
+//       consoleLog("len1 = " + String(len1) );       
 //
 //       strncpy(readCRC, teleGram + len1-4, 4); 
-//       console_Log("readCRC = " + String(readCRC) );
+//       consoleLog("readCRC = " + String(readCRC) );
 //
 //       int len2 = len1 - 4 ;
 //       
-//       console_Log("len2 = " + String(len2) );
+//       consoleLog("len2 = " + String(len2) );
 //       teleGram[len1-4] = '\0';
-//       console_Log("teleGram to check = " + String(teleGram) );       
+//       consoleLog("teleGram to check = " + String(teleGram) );       
 //       //int calculatedCRC = CRC16(0x0000, (unsigned char *) toCheck, len2);
 //       int calculatedCRC = CRC16(0x0000, (unsigned char *) teleGram, len1-4);
-//       console_Log("the calculated crc = " + String(calculatedCRC));
+//       consoleLog("the calculated crc = " + String(calculatedCRC));
 //      
-//       console_Log("strol of readCRC = " + String(strtol(readCRC, NULL, 16))); //8F46
+//       consoleLog("strol of readCRC = " + String(strtol(readCRC, NULL, 16))); //8F46
 //  
 //}
 
@@ -77,7 +77,7 @@
 //           Serial.print( String(testGram[i]) );
 //           www++;
 //           if( www >= testLength ) { // all has been send
-//              console_Log("testGram ready, www = " + String(www));
+//              consoleLog("testGram ready, www = " + String(www));
 //           memset(testGram, 0, sizeof(testGram));
 //           return true;
 //           }
@@ -86,7 +86,7 @@
 //    //we wait some time until serial.available has updated
 //    delay(100);
 //    int avail = Serial.available(); 
-//    console_Log("wrote " + String(bufspace) + " now available : " + String(avail) );
+//    consoleLog("wrote " + String(bufspace) + " now available : " + String(avail) );
 //    
 //    return false;
 //}
@@ -98,12 +98,12 @@
 //        char testGram[64]={"/if you see this, the serial port is oke!4861"};
 //        int len = strlen(testGram);
 //        int bufspace = Serial.availableForWrite();
-//        console_Log(" available for write = " + String(bufspace) );
-//        console_Log(" going to write bytes: " + String(len));
+//        consoleLog(" available for write = " + String(bufspace) );
+//        consoleLog(" going to write bytes: " + String(len));
 //        for (int i=0; i < len; i++)
 //        {
 //           Serial.print( String(testGram[i]) );
 //        }
-//    console_Log("wrote " + String(bufspace) + "bytes" );
+//    consoleLog("wrote " + String(bufspace) + "bytes" );
 //    return true;
 //}

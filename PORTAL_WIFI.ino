@@ -14,7 +14,7 @@ public:
 };
 
 void start_portal() {
-//  swap_to_Usb();
+
   IPAddress apIP(192, 168, 4, 1);
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer.start(DNS_PORT, "*", apIP);

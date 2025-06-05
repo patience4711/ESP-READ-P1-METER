@@ -1,56 +1,42 @@
+
+//{ check
 const char MENUPAGE[] PROGMEM = R"=====(
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>ESP P1 METER</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
-<style> 
-li a { width: 130px; } 
-.list {width:70%; height:250px;}
-@media only screen and (max-width: 800px) {
-  li a {
-    font-size:16px;
-    padding: 14px 26px 10px 12px;
-    width: 90px;
-  }
-.list {width:99%;}
-}
+<body>
+<style>
+a:link, a:visited { width: 98px;}
 </style>
 <script type="text/javascript" src="SECURITY"></script>
-<script> function cl() { window.location.href='/';} </script></head><body>
+<script> function close() {window.location.href='/';} </script>
 <div id='msect'>
-  <ul>
-  
-  <li id='fright'><span class='close' onclick='cl();'>&times;</span></ul>  
-  </ul>
+<div id='menu'>
+<a href="/" class='close' onclick='close();'>&times;</a>  
+</div>  
 </div>
 <br><br>
 <div id='msect'><kop>ESP P1 METER MENU</kop></div><br><br><br>
 
 <div id='msect'>
-  <div style='width: 30vw;'>
-  <ul class='list'>
-  <li><a href='/ABOUT'>system info</a></li>
-  <li><a href='/API/telegram' target='new'>telegram</a></li>
-  <li><a href='/REPORT'>report</a></li>
-  <li><a href='/CONSOLE'>console</a></li>
-  <li><a href='/BASISCONFIG'>settings</a></li>
+<table><tr>
+  <td style="width:100px"><a href='/ABOUT'>system info</a></td><td style="width:60px"></td><td style="width:100px">
+  <a href='/MQTT'>mosquitto</a></<td></tr>
   
-  </section>
-  </ul><br>
+  <td style="width:100px"><a href='/API/TELEGRAM' target='new'>telegram</a></td><td style="width:60px"></td><td style="width:100px">
+  <a href='/GEOCONFIG'>time config</a></<td></tr>
+    
+  <td style="width:100px"><a href='/REPORT'>report</a></td><td style="width:60px"></td><td style="width:100px">
+  <a href='/FWUPDATE'>fw update</a></<td></tr>  
+  
+  <td style="width:100px"><a href='/CONSOLE'>console</a></td><td style="width:60px"></td><td style="width:100px">
+  <a onclick="return confirm('are you sure?')" href='/REBOOT'>reboot</a></td></tr>
+
+  <td style="width:100px"><a href='/BASISCONFIG'>settings</a></li></td><td style="width:60px"></td><td style="width:100px">
+  <a onclick="return confirm('are you sure?')" href='/STARTAP'>start AP</a></td></tr>
+  
+  </table>  
+
   </div>
-  <div style="width:20vw"></div>
-  <div style='width: 30vw;'>
- 
-  <ul class='list'>
-  <li><a href='/MQTT'>mosquitto</a></li>
-  <li><a href='/GEOCONFIG'>time config</a></li>  
-  <li><a href='/FWUPDATE'>fw update</a></li>
-  <li><a onclick="return confirm('are you sure?')" href='/REBOOT'>reboot</a></li>
-  <li><a onclick="return confirm('are you sure?')" href='/STARTAP'>start AP</a></li>
-  </ul><br>
-  </div>
- 
-</div>
+  
 </body></html>
   )=====";
+
+//} 

@@ -6,7 +6,7 @@ const char ABOUT [] PROGMEM = R"=====(
 <meta http-equiv="refresh" content="180">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset='utf-8'>
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
+<link rel="stylesheet" type="text/css" href="/STYLESHEET">
 <title>ESP-P1 METER</title>
 <style>
 table, th, td {border: 1px solid blue; width:font-size:12px; background-color: #ffffcc; }
@@ -17,7 +17,10 @@ body {font-size:12px;} tr {height:26px;}
 <script type="text/javascript" src="SECURITY"></script>
 <script> function cl() { window.location.href='/MENU'; }</script>
 </head><body>
-<div id='msect'><ul><li id='fright'><span class='close' onclick='cl();'>&times;</span></ul></div>
+<div id='msect'>
+<div id='menu'>
+<a href="#" class='close' onclick='cl();'>&times;</a>
+</div></div>
 <center>
 <h2>P1-METER SYSTEM DATA</h2>
 
@@ -33,7 +36,7 @@ void handleAbout(AsyncWebServerRequest *request) {
   int dagen = urens/24;
  
   strcat(page, "<br><table><tr><TH colspan='2'>ESP SYSTEM INFORMATION</th></tr>" );
-  strcat(page, "<tr><td>firmware version<td>ESP-P1METER-v0_c</tr>");
+  strcat(page, "<tr><td>firmware version<td>ESP-P1METER-v0_1</tr>");
   if ( timeRetrieved ) strcat(page,"<tr><td>time retrieved<td>yes</tr>"); else strcat(page,"<tr><td>time retrieved<td>no</tr>");
   sprintf(temp, "<tr><td>systemtime<td> %d:%d " , hour(), minute());
   switch (dst) {

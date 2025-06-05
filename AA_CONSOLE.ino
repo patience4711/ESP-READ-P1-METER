@@ -1,4 +1,4 @@
-//<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+//{ check
 
 const char CONSOLE_HTML[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head>
@@ -6,7 +6,7 @@ const char CONSOLE_HTML[] PROGMEM = R"=====(
 <title>ESP-P1 METER</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
+<link rel="stylesheet" type="text/css" href="/STYLESHEET">
 <script>
 function helpfunctie() {
 document.getElementById("help").style.display = "block";
@@ -48,11 +48,11 @@ document.getElementById("help").style.display = "none";
   </div>
 
 <div id='msect'>
-<ul>
-<li id='fright'><a href='/MENU' onclick='confirmExit()' class='close'>&times;</span></a>
-<li><a href='#' onclick='helpfunctie()'>help</a>
-<li><a href='#'><input type="text" placeholder="type here" id="tiep"></a>
-</ul>
+<div id='menu'>
+<a href='/MENU' onclick='confirmExit()' class='close'>&times;</span></a>
+<a href='#' onclick='helpfunctie()'>help</a>
+<a href='#'><input type="text" placeholder="type here" id="tiep"></a>
+</div>
 </div>  
 <br>  
 <div id='msect'>
@@ -157,12 +157,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
               return;             
           } else          
 
-           if (strncasecmp(txBuffer+3,"SERIAL",6) == 0) {  
-              ws.textAll("test serial loopback, attention, fit the wire!!");
-              actionFlag=29; // 
-              diagNose=true;
-              return;             
-          } else 
+//           if (strncasecmp(txBuffer+3,"SERIAL",6) == 0) {  
+//              ws.textAll("test serial loopback, attention, fit the wire!!");
+//              actionFlag=29; // 
+//              diagNose=true;
+//              return;             
+//          } else 
 
  // ************  test mosquitto *******************************          
            if (strncasecmp(txBuffer+3,"TESTMQTT",8) == 0) {  
@@ -255,13 +255,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
           ws.textAll("going to show the debugfiles") ;  
       } else 
       
-      if (strncasecmp(txBuffer+3, "TESTWAIT",8) == 0) 
-      //show the testresults at boot
-      {
-          actionFlag = 23;
-          ws.textAll("test waitSerialAvailable") ;  
-      } else
-      
+     
       if (strncasecmp(txBuffer+3, "MONTH",5) == 0) 
       {
           ws.textAll("write the data into current month") ;
@@ -313,3 +307,5 @@ void initWebSocket() {
   ws.onEvent(onEvent);
   server.addHandler(&ws);
 }
+
+//}

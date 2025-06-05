@@ -18,18 +18,18 @@ void SPIFFS_read() {
              Serial.println("\ntestFile.txt not opened\n");
           }
        if( file_open_for_read("/wificonfig.json") ) {
-                Serial.println("read wificonfig\n");
+                Serial.println("\nread wificonfig\n");
           } else {
              Serial.println("wificonfig.json not opened\n");
           }
        
        if( file_open_for_read("/basisconfig.json") ) {     
-             Serial.println("read basisconfig\n");
+             Serial.println("\nread basisconfig\n");
           } else {
           Serial.println("basisconfig.json not opened\n");
         } 
        if( file_open_for_read("/mqttconfig.json") ) {     
-             Serial.println("mqttconfig read");
+             Serial.println("\nmqttconfig read");
           } else {
           Serial.println("mqttconfig.json not opened");
         }         
@@ -132,8 +132,13 @@ void wifiConfigsave() {
     Serial.println("spiffs save securityLevel = " + String(securityLevel));
     json["securityLevel"] = securityLevel;
     File configFile = LittleFS.open("/wificonfig.json", "w");
+    if (!configFile) {
+    Serial.println("open basisconfig failed");
+    }
+    if(diagNose){ 
     serializeJson(json, Serial);
-    Serial.println(F("")); 
+    Serial.println("");     
+    } 
     serializeJson(json, configFile);
     configFile.close();
 }
@@ -144,15 +149,17 @@ void basisConfigsave() {
     DynamicJsonDocument doc(1024);
     JsonObject json = doc.to<JsonObject>();
     json["userPwd"] = userPwd;
-    json["dom_Address"] = dom_Address;
-    json["dom_Port"] = dom_Port;    
-    json["gas_Idx"] = gas_Idx;
-    json["el_Idx"] = el_Idx;
     json["meterType"] = meterType;
+    json["pollFreq"] = pollFreq;
     json["Polling"] = Polling;
+    json["diagNose"] = diagNose;    
     File configFile = LittleFS.open("/basisconfig.json", "w");
     if (!configFile) {
-    if(USB_serial) Serial.println("open basisconfig failed");
+    Serial.println("open basisconfig failed");
+    }
+    if(diagNose){ 
+    serializeJson(json, Serial);
+    Serial.println("");     
     }
     serializeJson(json, configFile);
     configFile.close();
@@ -165,7 +172,8 @@ void mqttConfigsave() {
 
     json["Mqtt_Broker"] = Mqtt_Broker;
     json["Mqtt_Port"] = Mqtt_Port;    
-    json["Mqtt_stateIDX"] = Mqtt_stateIDX;
+    json["gas_Idx"] = gas_Idx;
+    json["el_Idx"] = el_Idx;
     json["Mqtt_outTopic"] = Mqtt_outTopic;
     json["Mqtt_Username"] = Mqtt_Username;
     json["Mqtt_Password"] = Mqtt_Password;
@@ -173,7 +181,11 @@ void mqttConfigsave() {
     json["Mqtt_Format"] = Mqtt_Format;    
     File configFile = LittleFS.open("/mqttconfig.json", "w");
     if (!configFile) {
-    if(USB_serial)("open mqttconfig failed");
+    Serial.println("open mqttconfig failed");
+    }
+    if(diagNose){ 
+      serializeJson(json, Serial);
+      Serial.println("");     
     }
     serializeJson(json, configFile);
     configFile.close();
@@ -189,22 +201,19 @@ bool file_open_for_read(String bestand) {
       //DebugPrintln("bestand bestaat");
         File configFile = LittleFS.open(bestand, "r");
         if (!configFile) return false;
-        
-        //DebugPrint("opened config file"); //DebugPrintln(bestand);
+        Serial.println("opened config file" + bestand);
            size_t size = configFile.size();
           // Allocate a buffer to store contents of the file.
            std::unique_ptr<char[]> buf(new char[size]);
            configFile.readBytes(buf.get(), size);
            DynamicJsonDocument doc(1024);
            auto error = deserializeJson(doc, buf.get());
-//           #ifdef DEBUG 
-//           serializeJson(doc, Serial); Serial.println(F(""));
-//           #endif
+           serializeJson(doc, Serial); Serial.println(F(""));
              if (error) return false; 
               //DebugPrintln("parsed json");
-              String jsonStr = ""; // we printen het json object naar een string
-            // nu kunnen we eerst controleren of een bepaalde entry bestaat
-            // zoniet slaan we die over anders crasht de ESP
+              String jsonStr = ""; // we print the json object to a string
+            // now we can check if an entry exists
+            // otherwise a crash occurs
                 //serializeJson(doc, Serial);
                 serializeJson(doc, jsonStr);
 
@@ -231,24 +240,24 @@ bool file_open_for_read(String bestand) {
 
             if (bestand == "/basisconfig.json") {
                      if(jsonStr.indexOf("userPwd") > 0) { strcpy (userPwd, doc["userPwd"] );}
-                     if(jsonStr.indexOf("dom_Address")   >  0 ) { strcpy(dom_Address,   doc["dom_Address"])         ;}
-                     if(jsonStr.indexOf("dom_Port") >  0 ) { dom_Port = doc["dom_Port"].as<int>() ;} 
-                     if(jsonStr.indexOf("gas_Idx")  >  0 ) { gas_Idx = doc["gas_Idx"].as<int>() ;}         
-                     if(jsonStr.indexOf("el_Idx")   >  0 ) { el_Idx = doc["el_Idx"].as<int>() ;}
+                     //if(jsonStr.indexOf("dom_Address")   >  0 ) { strcpy(dom_Address,   doc["dom_Address"])         ;}
+                     //if(jsonStr.indexOf("dom_Port") >  0 ) { dom_Port = doc["dom_Port"].as<int>() ;} 
                      if(jsonStr.indexOf("meterType")>  0 ) { meterType = doc["meterType"].as<int>() ;}
+                     if(jsonStr.indexOf("pollFreq")>  0 ) { pollFreq = doc["pollFreq"].as<int>() ;}
                      if(jsonStr.indexOf("Polling") > 0) {Polling = doc["Polling"].as<bool>();}
-              
+                     if(jsonStr.indexOf("diagNose") > 0) {diagNose = doc["diagNose"].as<bool>();}
               }            
 
             if (bestand == "/mqttconfig.json"){
                      if(jsonStr.indexOf("Mqtt_Broker")   >  0 ) { strcpy(Mqtt_Broker,   doc["Mqtt_Broker"])         ;}
-                     if(jsonStr.indexOf("Mqtt_Port")     >  0 ) { strcpy(Mqtt_Port,     doc["Mqtt_Port"])           ;}  
+                     if(jsonStr.indexOf("Mqtt_Port")     >  0 ) { Mqtt_Port =           doc["Mqtt_Port"].as<int>()  ;}
                      if(jsonStr.indexOf("Mqtt_outTopic") >  0 ) { strcpy(Mqtt_outTopic, doc["Mqtt_outTopic"])       ;}         
                      if(jsonStr.indexOf("Mqtt_Username") >  0 ) { strcpy(Mqtt_Username, doc["Mqtt_Username"])       ;}
                      if(jsonStr.indexOf("Mqtt_Password") >  0 ) { strcpy(Mqtt_Password, doc["Mqtt_Password"])       ;}
                      if(jsonStr.indexOf("Mqtt_Clientid") >  0 ) { strcpy(Mqtt_Clientid, doc["Mqtt_Clientid"])       ;}
                      if(jsonStr.indexOf("Mqtt_Format")   >  0 ) { Mqtt_Format =         doc["Mqtt_Format"].as<int>();}
-                     if(jsonStr.indexOf("Mqtt_stateIDX") >  0 ) { Mqtt_stateIDX =       doc["Mqtt_stateIDX"].as<int>();}
+                     if(jsonStr.indexOf("gas_Idx")  >  0 )      { gas_Idx =             doc["gas_Idx"].as<int>() ;}         
+                     if(jsonStr.indexOf("el_Idx")   >  0 )      { el_Idx =              doc["el_Idx"].as<int>() ;}
             }
 
               return true;

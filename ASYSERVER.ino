@@ -77,12 +77,12 @@ server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/html", P1_HOMEPAGE );
 });
 
-server.on("/STYLESHEET_HOME", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/css", STYLESHEET_HOME);
+server.on("/STYLESHEET", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send_P(200, "text/css", STYLESHEET);
 });
-server.on("/STYLESHEET_SUBS", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/css", STYLESHEET_SUBS);
-});
+//server.on("/STYLESHEET_SUBS", HTTP_GET, [](AsyncWebServerRequest *request) {
+//    request->send_P(200, "text/css", STYLESHEET_SUBS);
+//});
 server.on("/JAVASCRIPT", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/css", JAVA_SCRIPT);
 });
@@ -97,9 +97,21 @@ server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *request) {
 });
 
 server.on("/MENU", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
-    loginBoth(request, "admin");
-    request->send_P(200, "text/html", MENUPAGE);
+//Serial.println("requestUrl = " + request->url() ); // can we use this
+  if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
+
+  loginBoth(request, "admin");
+  toSend = FPSTR(HTML_HEAD);
+  toSend += FPSTR(MENUPAGE);
+  //toSend.replace( "{title}" , String(dvName)) ;
+  //toSend.replace( "{device}" , String(dvName)) ;
+request->send(200, "text/html", toSend);
+});
+
+server.on("/submitform", HTTP_GET, [](AsyncWebServerRequest *request) {
+handleForms(request);
+confirm(); // puts a response in toSend
+request->send(200, "text/html", toSend); // tosend is 
 });
 
 server.on("/DENIED", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -116,11 +128,11 @@ server.on("/BASISCONFIG", HTTP_GET, [](AsyncWebServerRequest *request) {
     //request->send(200, "text/html", toSend);
 });
 
-server.on("/basisconfig", HTTP_GET, [](AsyncWebServerRequest *request) {
-    handleBasisconfig(request);
-    //request->send(200, "text/html", toSend);
-    request->redirect( String(requestUrl) );
-});
+//server.on("/basisconfig", HTTP_GET, [](AsyncWebServerRequest *request) {
+//    handleBasisconfig(request);
+//    //request->send(200, "text/html", toSend);
+//    request->redirect( String(requestUrl) );
+//});
 
 server.on("/MQTT", HTTP_GET, [](AsyncWebServerRequest *request) {
     if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
@@ -129,10 +141,10 @@ server.on("/MQTT", HTTP_GET, [](AsyncWebServerRequest *request) {
     zendPageMQTTconfig(request);
 });
 
-server.on("/MQTTconfig", HTTP_GET, [](AsyncWebServerRequest *request) {
-handleMQTTconfig(request);
-request->redirect( String(requestUrl) );
-});
+//server.on("/MQTTconfig", HTTP_GET, [](AsyncWebServerRequest *request) {
+//handleMQTTconfig(request);
+//request->redirect( String(requestUrl) );
+//});
 
 server.on("/GEOCONFIG", HTTP_GET, [](AsyncWebServerRequest *request) {
     if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
@@ -141,11 +153,11 @@ server.on("/GEOCONFIG", HTTP_GET, [](AsyncWebServerRequest *request) {
     zendPageGEOconfig(request);
 });
 
-server.on("/geoconfig", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //DebugPrintln(F("geoconfig requested"));
-    handleGEOconfig(request);
-    request->redirect( String(requestUrl) );
-});
+//server.on("/geoconfig", HTTP_GET, [](AsyncWebServerRequest *request) {
+//    //DebugPrintln(F("geoconfig requested"));
+//    handleGEOconfig(request);
+//    request->redirect( String(requestUrl) );
+//});
 
 server.on("/REBOOT", HTTP_GET, [](AsyncWebServerRequest *request) {
     if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
@@ -227,13 +239,11 @@ server.on("/get.Data", HTTP_GET, [](AsyncWebServerRequest *request) {
     //long prevGAS = 0;
     float enReturn = ERET_HT+ERET_LT;
     float enCons   = ECON_HT+ECON_LT;
-    //long EnLt = mECLT-mERLT; // saldo
     float Power = PACTUAL_CON - PACTUAL_RET;
+    root["timestamp"] = String(timeStamp);
 
     root["ECON_HT"] = round3(ECON_HT);
-    //if(ECON_HT != 0 ) root["eNcht"] = round3(ECON_HT); else root["eNcht"] = "n/a";
     root["ECON_LT"] = round3(ECON_LT); 
-    //if(ECON_LT != 0 ) root["eNclt"] = round3(ECON_LT); else root["eNclt"] = "n/a";
     
     root["ERET_HT"] = round3(ERET_HT);// else root["eNrht"] = "n/a";
     root["ERET_LT"] = round3(ERET_LT);// else root["eNrlt"] = "n/a";
@@ -262,5 +272,7 @@ server.begin();
 }
 
 void confirm() {
-toSend="<html><body onload=\"setTimeout(function(){window.location.href='/';}, 3000 );\"><br><br><center><h3>processing<br>your request,<br>please wait</html>";
+toSend="<html><body onload=\"setTimeout(function(){window.location.href='";
+toSend+=String(requestUrl);
+toSend+="';}, 3000 );\"><br><br><center><h1>processing<br>your request,<br>please wait</h1></html>";
 }

@@ -1,3 +1,4 @@
+//{ check
 bool mqttConnect() {   // 
 /* this function checks if we are connected to the broker, if not connect anyway */  
     if( MQTT_Client.connected() ) {
@@ -7,11 +8,17 @@ bool mqttConnect() {   //
     // we are here because w'r not connected. Signal with the LED
     ledblink(2,70);
 
-    if (Mqtt_Port[0] == '\0' ) strcpy(Mqtt_Port, "1883");   // just in case ....
+    if (Mqtt_Port == 0 ) { Mqtt_Port = 1883;}   // just in case ....
+    char Mqtt_inTopic[24]={0}; //ESP-P1meter-12345678 = 20
     uint8_t retry = 3;
-    
-    char Mqtt_inTopic[11]={"ESP-ECU/in"};
-
+    String intopic = "ESP-P1METER-" + String(ESP.getChipId()) + "/in";
+    Serial.println("intopic = " + intopic);
+    //char Mqtt_inTopic = intopic.c_str();
+    //Serial.println("char Mqtt_inTopic = " + String(Mqtt_inTopic));
+    intopic.toCharArray(Mqtt_inTopic, 20);
+    //char Mqtt_inTopic[16]={"ESP-P1METER/in"};
+    //char Mqtt_inTopic[16]={"ESP-P1METER/in" + };
+    //strcpy(Mqtt_inTopic, intopic.c_str());
     while (!MQTT_Client.connected()) {
 
       if ( MQTT_Client.connect( Mqtt_Clientid, Mqtt_Username, Mqtt_Password) )
@@ -30,7 +37,8 @@ bool mqttConnect() {   //
        return true;
 
     } else {
-        //String term = "connection failed state: " + String(MQTT_Client.state());
+        String term = "connection failed state: " + String(MQTT_Client.state());
+        Serial.println(term);
         #ifdef LOG 
         Update_Log(3, "failed"); 
         #endif
@@ -75,19 +83,21 @@ void MQTT_Receive_Callback(char *topic, byte *payload, unsigned int length)
     if( doc.containsKey("poll") )
     {
         //int inv = doc["poll"].as<int>(); 
-        console_Log( "got message containing \"poll\"");
+        consoleLog( "got message containing \"poll\"");
 
         if(!Polling)
         {
              actionFlag = 26; // takes care for the polling
               return;
             } else {
-               console_Log("error, automatic polling is on");
+               consoleLog("error, automatic polling is on");
               return;         
             }
         }
         else
         {
-          console_Log("polling = automatic, skipping");
+          consoleLog("polling = automatic, skipping");
         }
 }
+
+//}

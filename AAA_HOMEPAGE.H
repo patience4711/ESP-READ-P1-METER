@@ -1,22 +1,11 @@
-
-//<input type="number" id="invCount" value="%count%" hidden>
-//<script type="text/javascript" src="SECURITY"></script>
-// <li><a href='/LOGPAGE'>log</a></li>
-  //<li><a href='/INFOPAGE'>info</a></li>  
-
-//  <li><a href='/ABOUT'>about</a></li>
-//  <li><a href='/LOGPAGE'>journal</a></li>
-  
-//  <li id="ml" style='float:right; display:none'><a id='haha' href='/MENU'>menu</a></li>
-//<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+//{ check
 const char P1_HOMEPAGE[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head>
 
 <meta charset='utf-8' name="viewport" content="width=device-width, initial-scale=1">
 <title>ESP-P1 METER</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">  
-
+<link rel="stylesheet" type="text/css" href="/STYLESHEET">
 
 <style>
 body {
@@ -123,12 +112,13 @@ tr {height:35px;}
 </head>
 
 <body onload='loadScript()'>
-
 <div id='msect'>
-  <ul>
-<li id="ml" style='float:right; display:none'><a id='haha' href='/MENU'>menu</a></li>
-  </ul>
+<div id='menu'>
+
+<a id="ml" href='/MENU' style='float:right; display:none'>menu</a>
 </div>
+</div>
+
 <div id='msect'>
   <kop>ESP P1 METER</kop>
 </div>
@@ -252,13 +242,6 @@ function getData() {
       //var gAa = obj.gAs;
       var rem = obj.rm;
       if(rem == 0) {document.getElementById("ml").style.display = "block";} // hide menu link         
-      //document.getElementById("p00").innerHTML = "<div class='popup'><button class='btn' id='btn1'>details</button><span class='popuptext' id='myPopup'></span><div>";
-      //document.getElementById("p10").innerHTML = "<button class='btn' id='btn2'>details</button>";
-      //document.getElementById("p20").innerHTML = "<button class='btn' id='btn3'>details</button>";
-
- //     document.getElementById("p10").innerHTML = "<button class='btn' onclick='det_enr();'>details</button>";
- //     document.getElementById("p20").innerHTML = "<button class='btn' onclick='det_pow();'>details</button>";
-
       cel="p01";
       if(enC < 0 ) celbga(cel); else celbgc(cel);
       if(obj.enC != "n/a") {
@@ -291,8 +274,8 @@ function getData() {
            }     
 
       document.getElementById("noOutput").style.display = "none";
-       const d = new Date().toString();
-      document.getElementById("time").innerHTML = d.substr(16,8);
+
+      document.getElementById("time").innerHTML = obj.timestamp;
       }
   }
   xhttp.open("GET", "/get.Data", true);
@@ -322,3 +305,5 @@ if (!!window.EventSource) {
 }
 
 )=====";
+
+//}

@@ -5,7 +5,7 @@ const char REPORTPAGE[] PROGMEM = R"=====(
 <meta http-equiv="refresh" content="60">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
+<link rel="stylesheet" type="text/css" href="/STYLESHEET">
 <style>
 
 #tb {
@@ -54,10 +54,10 @@ document.getElementById(row).style.backgroundColor='#ff66ff';
 }
 </script>
 </head><body onload="loadScript()"><center>
-<ul>
-<li id='fright'><span class='close' onclick='cl();'>&times;</span>
-<li><a href='#' onClick='window.location.reload()'>refresh</a></li>
-</ul>
+<div id='menu'>
+<a href="#" class='close' onclick='cl();'>&times;</a>
+<a href='#' onClick='window.location.reload()'>refresh</a>
+</div>
 <h2>ESP-P1 METER REPORT</h2>
 <div class='divstijl'>
 <table id='tb'><tr><tr>

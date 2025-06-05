@@ -20,7 +20,11 @@ if(!checkRemote( request->client()->remoteIP().toString()) ) intern = true;
 
 if ( intern ) {    //DebugPrintln("the request comes from inside the network");
         String serverUrl = request->url().c_str();             
-        if ( serverUrl.indexOf("/API/telegram") > -1) {
+        if ( serverUrl.indexOf("/API/TELEGRAM") > -1) {
+            char tozend[1024];
+            strcat(teleGram, "\r\npolled at ");
+            strcat(teleGram, timeStamp);
+            testTelegram = false; // useless for testing   
             request->send(200, "text/plain", String(teleGram) );
         }
 

@@ -1,7 +1,7 @@
 /* this program works as follows: first make the enable pin high
  * next make the serial buffer empty if there is data
- * mow wait untill data becomes available
- * start reading until the startsigb is found (likely this is the fst byte)
+ * now wait until data becomes available
+ * read until the startsign is found (likely the fst byte)
  * read the next bytes until the endsign is found.
  * if success the crc is checked and if oke the values are extracted from the telegram 
  * and send via mosquitto
@@ -16,8 +16,8 @@ void meterPoll() {
       
       digitalWrite(P1_ENABLE, LOW);
       decodeTelegram(); 
-      sendMqtt(false);
-      sendMqtt(true);
+      sendMqtt(false); // send el
+      sendMqtt(true); // send gas
     } 
     // when done, write the logfile if not exists
     strcat(logChar, "\npoll done");
@@ -56,9 +56,7 @@ bool read_into_array() {
               if (inByte[0] == '/') { 
                     sprintf(rep, "\nfound start at %d", byteCounter);
                     strcat(logChar,rep);
-                    //Bytes = Serial.available(); // check how much is available
-                    //sprintf(rep, "\navail %d", Bytes);
-                    //strcat(logChar,rep);
+                    // add this byte to teleGram 
                     strncat(teleGram, inByte, 1); 
                     // now we add the next 650 bytes to teleGram 
                     // until we encounter the endsign
@@ -67,7 +65,7 @@ bool read_into_array() {
                        strncat( teleGram, inByte, 1);
                        // catch the endsign
                        if (inByte[0] == '!' ) {
-                           console_Log("found the end sign");
+                           consoleLog("found the end sign");
                            strcat(logChar, "\nend sign");
                            // we need to read 4 more bytes (the crc) until the \n and then stop
                            Serial.readBytes(readCRC, 4);
@@ -76,7 +74,7 @@ bool read_into_array() {
                            return true;
                         }   
                      }
-               // if we are here, we read 650 characters more but no endsign has been found
+               // if we are here, we have read 650 characters but no endsign found
                strcat(logChar,"\nfs no end");
                return false;              
            }
@@ -97,15 +95,19 @@ bool read_into_array() {
 }  
 
 void decodeTelegram() {
+/* this function processes the read telegram
+ *  first the crc is calculated and compared
+ *  if crc is approved we extract the data from the telegram
+ */
       if (polled) {
         //we have a valid telegram, now we can decode it.
-        //if no testfiles, we write them first
+        //if no testfile, we write that first
+        // before the teleGram is modyfied
         if( !LittleFS.exists("/testFile.txt")) {
             testFilesave(); // an existing file is not overwritten
-            //logCharsave(); // an existing file is not overwritten
         }
          int lengte = strlen(teleGram);
-         console_Log("teleGram length = " + String(lengte));
+         consoleLog("teleGram length = " + String(lengte));
          
          // the crc = calculated over the telegram inc start and endsign, so without crc
          // the teleGram contains the CRC so we terminate teleGram after the !
@@ -114,24 +116,26 @@ void decodeTelegram() {
          testTelegram = false;
          int calculatedCRC = CRC16(0x0000, (unsigned char *) teleGram, lengte-4); 
          
-         console_Log("the calculated crc = " + String(calculatedCRC));
+         consoleLog("the calculated crc = " + String(calculatedCRC));
       
-         console_Log("strol of readCRC = " + String(strtol(readCRC, NULL, 16))); //8F46
+         consoleLog("strol of readCRC = " + String(strtol(readCRC, NULL, 16))); //8F46
     
         if(strtol(readCRC, NULL, 16) == calculatedCRC) //do the crc's match
         {
-            console_Log("crc is correct, now extract values..");
+            consoleLog("crc is correct, now extract values..");
             strcat(logChar, "\ncrc ok");
             extractTelegram();   
             polled = true;
             eventSend(2); // inform the webbpage that there is new data
-            console_Log("polled true");
+            consoleLog("polled true");
+            // set the timestamp
+            sprintf( timeStamp, "%02d/%02d %02d:%02d", day(), month(), hour(), minute() );
             return;
         } else {
-            console_Log("crc is wrong, now extract values..");
+            consoleLog("crc is wrong, now extract values..");
             strcat(logChar, "\ncrc false");
             polled=false;
-            console_Log("not polled");
+            consoleLog("not polled");
             return;
         }
     }
@@ -151,43 +155,43 @@ char what[24];
       strcpy(what, "1-0:1.8.1(");
       if(strstr(teleGram, what )) {
           ECON_LT = returnFloat(what, 20, 10, 10);
-          console_Log("extracted ECON_LT = " + String(ECON_LT, 3));
+          consoleLog("extracted ECON_LT = " + String(ECON_LT, 3));
       }  
     // find 1-0:1.8.2(000000.000*kWh) len = 20
       strcpy(what, "1-0:1.8.2(");
       if(strstr(teleGram, what )) {
           ECON_HT = returnFloat(what, 20, 10, 10);
-          console_Log("extracted ECON_HT = " + String(ECON_HT, 3));
+          consoleLog("extracted ECON_HT = " + String(ECON_HT, 3));
      }
     // find 1-0:2.8.1(0000524.413*kWh) len = 20
       strcpy(what, "1-0:2.8.1(");
       if(strstr(teleGram, what )) {
           ERET_LT = returnFloat(what, 20, 10, 10);
-          console_Log("extracted ERET_LT = " + String(ERET_LT, 3));
+          consoleLog("extracted ERET_LT = " + String(ERET_LT, 3));
     }  
     // find 1-0:2.8.2(000000.000*kWh) len = 20
       strcpy(what, "1-0:2.8.2(");
       if(strstr(teleGram, what )) {
           ERET_HT = returnFloat(what, 20, 10, 10);
-          console_Log("extracted ERET_HT = " + String(ERET_HT, 3));
+          consoleLog("extracted ERET_HT = " + String(ERET_HT, 3));
     }
     // find 1-0:1.7.0(00.335*kW) len=16 start 10 count 6
       strcpy(what, "1-0:1.7.0(");
       if(strstr(teleGram, what )) {
           PACTUAL_CON = returnFloat(what, 16, 10, 6) * 1000; // watts
-          console_Log("extracted PACTUAL_CON = " + String(PACTUAL_CON, 3));
+          consoleLog("extracted PACTUAL_CON = " + String(PACTUAL_CON, 3));
      } 
     // find 1-0:2.7.0(00.000*kW) len=16 start 10 count 6
       strcpy(what, "1-0:2.7.0(");
       if(strstr(teleGram, what )) {
           PACTUAL_RET = returnFloat(what, 16, 10, 6) * 1000; //watts
-          console_Log ("extracted PACTUAL_RET = " + String(PACTUAL_RET, 3));         
+          consoleLog ("extracted PACTUAL_RET = " + String(PACTUAL_RET, 3));         
       }
     // find 0-1:24.2.1(171105201000W)(00016.713*m3) len 39 start 26 count 9
       strcpy(what, "0-1:24.2.1");
       if(strstr(teleGram, what )) {
           mGAS = returnFloat(what, 39, 26, 9);
-          console_Log ("extracted mGAS = " + String(mGAS, 3));        
+          consoleLog ("extracted mGAS = " + String(mGAS, 3));        
       }
 }
 
@@ -205,7 +209,7 @@ float returnFloat(char what[24], uint8_t len, uint8_t bgn, uint8_t count) {
    return atof(number);
 }
 
-void console_Log(String toLog) {
+void consoleLog(String toLog) {
   if(diagNose)
   {
     ws.textAll(toLog);
@@ -214,7 +218,7 @@ void console_Log(String toLog) {
 }
 
 void sendMqtt(bool gas) {
-
+// when trus send gas
 if(Mqtt_Format == 0) return;  
 
   char Mqtt_send[26]={0};  

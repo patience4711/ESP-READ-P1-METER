@@ -4,7 +4,7 @@
 void start_wifi() {
  WiFi.softAPdisconnect(true);
  WiFi.mode(WIFI_STA);
- WiFi.hostname("ECU");
+ WiFi.hostname("ESP-P1METER");
 
  WiFi.mode(WIFI_STA); // geen ap op dit moment 
 

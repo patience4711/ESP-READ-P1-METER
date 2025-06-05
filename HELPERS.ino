@@ -1,14 +1,4 @@
 
-
-//int FindCharInArray(char array[], char c, int len) {
-//  for (int i = len - 1; i >= 0; i--) {
-//    if (array[i] == c) {
-//      return i;
-//    }
-//  }
-//  return -1;
-//}
-
 long getValidVal(long valNew, long valOld, long maxDiffer)
 {
   //check if the incoming value is valid
@@ -16,29 +6,6 @@ long getValidVal(long valNew, long valOld, long maxDiffer)
         return valOld;
       return valNew;
 }
-
-
-// void swap_to_usb () {
-//  delay(1000);
-//  if (!USB_serial)
-//  {
-//      Serial.swap();
-//      delay(300);
-//      empty_serial(); // remove what's in the buffer
-//      USB_serial=true;
-//  } 
-//}
-//
-//void swap_to_hw () {
-//   delay(200); //was 300
-//  if (USB_serial) 
-//  {
-//      Serial.swap();
-//      delay(100);
-//      empty_serial(); // remove what's in the buffer
-//      USB_serial=false;
-//   }
-//}
 
 char *split(char *str, const char *delim)
 {
@@ -51,15 +18,6 @@ char *split(char *str, const char *delim)
     return p + strlen(delim); // return tail substring
 }
 
-
-//float makeFloat(uint8_t bgn, uint8_t digits) { 
-//  // like this it is normally decoded
-//  char tail[16];
-//  strncpy(tail, telegramLine + bgn, digits);
-//  //Serial.println("tail= " + String(tail));
-// // now we have the number, convert it to a float
-//  return atof(tail);
-//}
 
 double round3(double value) {
    return (int)(value * 1000 + 0.5) / 1000.0;
@@ -77,10 +35,10 @@ double round0(double value) {
 bool waitSerialAvailable(int howMany) // wait untill something 's available
 {
 ledblink(howMany, 30);
-Serial.println("waitSerialAvailable");
+//Serial.println("waitSerialAvailable");
     for(int y=0; y < howMany; y++) {
      ledblink(2, 20);        
-     Serial.println("y = " + String(y) );
+     //Serial.println("y = " + String(y) );
       unsigned long wait = millis();
       while ( !Serial.available() )
           {

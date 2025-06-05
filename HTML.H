@@ -1,3 +1,4 @@
+//{ check
 const char SECURITY[] PROGMEM = R"=====(
 var message = "viewing this page is disabled!";
 function rtclickcheck(keyp){ if (navigator.appName == "Netscape" && keyp.which == 3){ alert(message); return false; }
@@ -10,52 +11,147 @@ const char HTML_HEAD[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head><meta charset='utf-8'>
 <title>ESP-P1 METER</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_SUBS">
+<link rel="stylesheet" type="text/css" href="/STYLESHEET">
+
 <script type='text/javascript'>
 
 function showSubmit() {
 document.getElementById("sub").style.display = "block";
 }
-function submitFunction(a) {
-document.getElementById("bo").innerHTML="<br>wait...<br>processing<br>your<br>request"; 
-document.getElementById("bo").style.display="block"; 
+function submitFunction() {
 document.getElementById('formulier').submit();
-setTimeout(function(){window.location.href=a;}, 3000 ); 
 }
 function cl() {
 window.location.href='/MENU';
 }
+function helpfunctie() {
+document.getElementById("help").style.display = "block";
+}
+
 </script>
 </head>
 )=====";
-
-const char STYLESHEET_HOME[] PROGMEM = R"=====(
-#sectie li{float:none;}
-body { background: linear-gradient(#e8f5f7, #caf5fb); color:navy; font-family:'lato',Verdana,Sans-serif; font-size:16px; }
-.divstijl { background: linear-gradient(#e8edc8, #c8eaed); padding:0px 0px 0px 0px; width: 96%; height: 99%; }
+const char STYLESHEET[] PROGMEM = R"=====(
+body { background: linear-gradient(#e8f5f7, #caf5fb); color:navy; font-family:'lato',Verdana,Sans-serif;font-size:16px;}
+.divstijl { background: linear-gradient(#e8edc8, #c8eaed); padding:0px 0px 0px 0px; width: 50vw; height: 99%; }
 #msect { display: flex; flex-basis: 100%; align-items: center; margin: 0px 0px; width:96vw;}
-#msect:before, #msect:after { content: ""; flex-grow: 1;  margin: 0px 0px;}
-kop { font-size: 4vw; font-weight:bold; padding-top: 1vh; padding-bottom: 1vh;}
-p {color: #006600; font-family: 'lato',Verdana,Sans-serif; font-size:14px; }
-tr {height:45px;} ul { list-style-type: none; margin: 0 auto 0 auto; padding: 0; overflow: hidden; background-color: #333; border-radius:6px;width: 96vw; height: 48px;}
-li { float: left;} li a:hover { background-color: #ff0808 !important;} a:focus {background-color: red;} th { width:44px; }
-li a { display: inline-block; color: white; text-align: center; padding: 14px 6px 10px; text-decoration: none; width:70px; font-size:20px;}
-.close {color: red; font-size: 42px; font-weight: bold; cursor: pointer; width:70px; padding: 0px 20px;}.close:hover {color: green;} #fright {float:right;}
-@media only screen and (max-width: 800px) { li a { font-size:16px; padding: 14px 26px 10px 12px; width: 50px; }}
-)=====";
+#msect:before,#msect:after {content: ""; flex-grow: 1; margin: 0px 0px;}
+#bo {width:100%; height:100%; position: absolute; left:0; top:0; background-color:rgba(192,192,192,0.9); color:white; z-index:10; font-size: 90px;  font-weight: bold; text-align: center; display: none;} 
+.bt{
+    display:block;
+    width:124px;
+    height:44px;
+    padding:6px;
+    margin:6px;
+    text-align:center;
+    border-radius:10px;
+    color:white;
+    font-weight:bold;
+    font-size:18px;
+    text-decoration:none;
+    background:#b9b9c1;
+    box-shadow: 0 9px #999;
+   }
+.bt:hover {background-color: #66ff33;}
 
-const char STYLESHEET_SUBS[] PROGMEM = R"=====(
-body { background: linear-gradient(#e8f5f7, #caf5fb); color:navy; font-family:'lato',Verdana,Sans-serif; font-size:16px; }
-kop { font-size: 4vw; font-weight:bold; padding-top: 1vh; padding-bottom: 1vh;}
-#help { background-color: #ffffff; border: solid 2px; display:none; padding:4px; width:94vw;}
-.close { color: red; float: right; font-size: 48px; font-weight: bold; cursor: pointer;} .close:hover {color: green;} 
-input { font-size:24px; } .inp1 { width:46px; } .inp2 { width:62px; } .inp3 { width:76px; } .inp4 { width:180px;} .inp5 { width:172px;}.inp6 { width:230px;} 
-option { direction: ltr;} .sb1 {font-size:22px; height:30px; } 
-#bo {width:100%; height:100%; position: absolute; left:0; top:0; background-color:rgba(192,192,192,0.9); color:white; z-index:10; font-size: 90px;
-  font-weight: bold; text-align: center; display: none;} #sub { float: left; background:green; display:none }
-b {color: #;font-size:18px;font-weight:bold;} .close {color: red; font-size: 42px; font-weight: bold; cursor: pointer; width:70px; padding: 0px 20px;
-}.close:hover {color: green;} input[type=checkbox] {width:30px; height:30px;} #fright {float:right;}
+.bt:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+  .a{font-size:25px;}
+.slider {
+  -webkit-appearance: none;
+  width: 70%;
+  height: 25px;
+  background: #111166;
+  outline: none;
+  border-radius: 10px;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+.slider:hover {
+  opacity: 1;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #2CAF50;
+  cursor: pointer;
+}
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #2CAF50;
+  cursor: pointer;
+}
+kop {
+  font-size: 3vw;
+  font-weight:bold;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+}
+
+p {
+  color: #006600;
+  font-family: 'lato',Verdana,Sans-serif;
+  font-size:14px;
+  }
+
+input { font-size:18px; }
+
+.inp2 { width:62px; } 
+.inp3 { width:66px; }
+.inp4 { width:100px; }
+.inp5 { width:160px;}
+.inp6 { width:220px;} 
+
+option {direction: ltr;}
+.sb1 { font-size:20px; height:29px; } 
+#help { background-color: #ffffff; border: solid 2px; display:none; padding:4px; width:94vw;} 
+tr {height:36px;} 
+input[type=checkbox] { width:24px; height:24px; }
+
+/* new menu styling */
+a:link, a:visited {
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none; /* prevent the underline */
+  display: inline-block;
+  width: 58px;
+  line-height: 48px;
+  margin-right: 2px;
+}
+
+a:hover { background-color: green; color: white;}
+#menu { height:48px; width: 60vw; overflow: hidden; background-color: #333; border-radius:6px;}
+.close { color: red !important; position: static; float:right; font-size: 42px; font-weight: bold; cursor: pointer;}
+
+b { color: #eab3f2; margin-left: 4px; font-size:16px;}
+#sub { float: left; background:green; display:none }
+#fright {float:right;}
+
+@media only screen and (max-width: 800px) {
+.inp3a,{ 
+  width:70px;
+  font-size:18px;
+  }
+.divstijl {width:98vw;}
+.close { font-size: 32px; width:20px; padding: 0px 10px;}
+input, .sb1 { font-size:16px; }
+.sb1 {height:24px;} 
+body  { font-size:12px; }
+#menu {width:98vw;}
+kop { font-size: 7vw;}
+}
+
 )=====";
 
 //<script type='text/javascript'>setTimeout(function(){ window.location.href='/SW=BACK';}, 3000 ); </script>
@@ -98,26 +194,6 @@ Your Esp device is going to reboot. <strong>Wait util the led has blinked 3 time
 </body></html>
 )=====";
 
-const char CONFIRM_INV[] PROGMEM = R"=====(
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>ESP-ECU</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
-</head>
-<body style='font-size:16px;'>
-<script type='text/javascript'>setTimeout(function(){ window.location.href='/INV_CONFIG';}, 6000 ); </script>
-<center>
-<h1>PROCESSING THE INVERTER DATA...</h1><div class='lijnstijl'></div><br><br>
-<div class='divstijl'>
-The inverterdata are saved.<br><br>
-In a moment the device is going to reboot.<br><br> 
-You will be redirected to the inverter config page. 
-
-<br><br>
-</div>
-<br><br> <a href='/SW=BACK'><span class='close'>&times;</span></a></body></html>
-)=====";
-
 
 const char UPDATE_FORM[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head><meta charset='utf-8'>
@@ -144,60 +220,6 @@ document.getElementById('hiddendiv').innerHTML="<marquee><kop>updating firmware,
 </div></center></body></html>    
 )=====";
 
-const char WAIT_PAIR[] PROGMEM = R"=====(
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-</head><body onload="loadScript()">
-<center><br><br><h2>PAIRING INVERTER {#}</h2>
-<br><br><br>
-<div id="marq" style='margin: 50px; width: 40%; background:#e7f2bd;'>
-<marquee><h3>pairing, do not interrupt .....</h3></marquee>
-</div>
-<div id="hiddenSucc" style="display:none"<br><br><br>
-<h3>The pairing succeeded.
-<br><br><br><a href="/LOGPAGE">click here</a></h3>
-</div>
-<div id="hiddenFail" style="display:none"<br><br><br>
-<h3>The pairing failed.
-<br><br><br><a href="/LOGPAGE">click here</a></h3>
-</div>
-
-<script>
-function loadScript() {
-  getData();
-  loadData();
-}
-
-setInterval(function loadData() {
- getData()
-},9000);
-
-function getData() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      var antwoord = this.responseText;
-      var obj = JSON.parse(antwoord);
-      var invID = obj.invID;
-      
-      if( invID != "1111" ) {
-          if( invID == "0000" ) {
-            document.getElementById("marq").style.display = "none";
-            document.getElementById("hiddenFail").style.display = "block";
-            setTimeout(function(){ window.location.href='/'; }, 5000 );
-          } else {
-            document.getElementById("marq").style.display = "none";
-            document.getElementById("hiddenSucc").style.display = "block";
-            setTimeout(function(){ window.location.href='/'; }, 5000 );
-          }
-       }
-    }
-  }
-  xhttp.open("GET", "get.Paired", true);
-  xhttp.send();
-}
-</script>
-</body></html>    
-)=====";
 
 const char REQUEST_DENIED[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head><meta charset='utf-8'>
@@ -358,3 +380,5 @@ tr {width:94vw;}
 %rows%
 </table></center></div></body></html>
 )=====";
+
+//}
