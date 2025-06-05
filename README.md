@@ -29,6 +29,8 @@ You can use the provided binary but if you must compile it yourself: Use arduino
 <br>Please note: by popular demand I have published the code here but i do not feel responsible for problems as to compiling. Impossible for me to know why it doesn't compile in your situation.
 
 ## downloads
+june 25 2025: There is a new version 0_1 available.<br> 
+Download [ESP-P1METER-v0_1](https://github.com/patience4711/ESP-READ-P1-METER/blob/main/ESP-P1METER-v0_1.ino.d1.bin)<br>
 july 26 2023: There is a new version 0_c available.<br> 
 Download [ESP-P1METER-v0_c](https://github.com/patience4711/ESP-READ-P1-METER/blob/main/ESP-P1METER-v0_c.bin)<br>
 
@@ -61,3 +63,5 @@ It starts with a "/" and ends with a "!". The program reads the serial port unti
 Next the checksum calculation is done and when the char array is approved, the interesting values can be extracted.
 
 ## changelog ##
+version ESP-P1METER-v0_1:
+  - cosmetical improvements
