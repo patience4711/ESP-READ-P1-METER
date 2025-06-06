@@ -6,64 +6,7 @@ server.on("/CONSOLE", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", CONSOLE_HTML);
   });
 
-// Simple Firmware Update
-  server.on("/FWUPDATE", HTTP_GET, [](AsyncWebServerRequest *request){
-    if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );    
-    strcpy( requestUrl, "/" );
-    if (!request->authenticate("admin", pswd) ) return request->requestAuthentication();
-    request->send_P(200, "text/html", UPDATE_FORM); 
-    });
-  server.on("/handleFwupdate", HTTP_POST, [](AsyncWebServerRequest *request){
-    if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
-    //swap_to_usb(); // this should work now
-    Serial.println(F("FWUPDATE requested"));
-    if( !Update.hasError() ) {
-    toSend="<br><br><center><h2>UPDATE SUCCESS !!</h2><br><br>";
-    toSend +="click here to reboot<br><br><a href='/REBOOT'><input style='font-size:3vw;' type='submit' value='REBOOT'></a>";
-    } else {
-    toSend="<br><br><center><kop>update failed<br><br>";
-    toSend +="click here to go back <a href='/FWUPDATE'>BACK</a></center>";
-    }
-    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", toSend);
-    response->addHeader("Connection", "close");
-    request->send(response);
-  
-  },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
-    //Serial.println("filename = " + filename);
-    if(filename != "") {
-    if(!index){
-      //#ifdef DEBUG
-        Serial.printf("start firmware update: %s\n", filename.c_str());
-      //#endif
-      Update.runAsync(true);
-      if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
-        //#ifdef DEBUG
-          Update.printError(Serial);
-        //#endif
-      }
-    }
-    } else {
-      //("filename empty, aborting");
-//     Update.hasError()=true;
-    }
-    if(!Update.hasError()){
-      if(Update.write(data, len) != len){
-        //#ifdef DEBUG
-          Serial.println(F("update failed with error: " ));
-          Update.printError(Serial);
-        //#endif
-      }
-    }
-    if(final){
-      //#ifdef DEBUG
-      if(Update.end(true)){
-        Serial.printf("firmware Update Success: %uB\n", index+len);
-      } else {
-        Update.printError(Serial);
-      }
-      //#endif
-    }
-  });
+
 // ***********************************************************************************
 //                                     homepage
 // ***********************************************************************************
@@ -108,18 +51,21 @@ server.on("/MENU", HTTP_GET, [](AsyncWebServerRequest *request) {
 request->send(200, "text/html", toSend);
 });
 
+server.on("/DENIED", HTTP_GET, [](AsyncWebServerRequest *request) {
+   request->send_P(200, "text/html", REQUEST_DENIED);
+});
+
+
+// ***********************************************************************************
+//                                   basisconfig
+// ***********************************************************************************
+
 server.on("/submitform", HTTP_GET, [](AsyncWebServerRequest *request) {
 handleForms(request);
 confirm(); // puts a response in toSend
 request->send(200, "text/html", toSend); // tosend is 
 });
 
-server.on("/DENIED", HTTP_GET, [](AsyncWebServerRequest *request) {
-   request->send_P(200, "text/html", REQUEST_DENIED);
-});
-// ***********************************************************************************
-//                                   basisconfig
-// ***********************************************************************************
 server.on("/BASISCONFIG", HTTP_GET, [](AsyncWebServerRequest *request) {
     if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
     loginBoth(request, "admin");
@@ -168,14 +114,14 @@ server.on("/REBOOT", HTTP_GET, [](AsyncWebServerRequest *request) {
 });
 
 server.on("/STARTAP", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
-    loginBoth(request, "admin");
-    //DebugPrintln("We gaan de gegevens wissen");
-    String toSend = F("<!DOCTYPE html><html><head><script type='text/javascript'>setTimeout(function(){ window.location.href='/SW=BACK'; }, 5000 ); </script>");
-    toSend += F("</head><body><center><h2>OK the accesspoint is started.</h2>Wait unil the led goes on.<br><br>Then go to the wifi-settings on your pc/phone/tablet and connect to ESP-");
-    toSend += String(ESP.getChipId()) + " !";
-    request->send ( 200, "text/html", toSend ); //zend bevestiging
-    actionFlag = 11;
+  if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
+  loginBoth(request, "admin");
+  String toSend = F("<!DOCTYPE html><html><head><script type='text/javascript'>setTimeout(function(){ window.location.href='/'; }, 5000 ); </script>");
+  toSend += ("</head><body><center><h2>OK wifi settings flushed and the AP is started.</h2>Wait until the led goes on.<br><br>Then open wifi settings on your phone/tablet/pc and connect to ");
+  toSend += getChipId(false);
+  
+  request->send ( 200, "text/html", toSend ); //zend bevestiging
+  actionFlag = 11;
 });
 
 server.on("/ABOUT", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -261,7 +207,62 @@ server.on("/get.Data", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(response);
 });
 
-
+// ***************************************************************************************
+//                           Simple Firmware Update
+// ***************************************************************************************                                      
+  server.on("/FWUPDATE", HTTP_GET, [](AsyncWebServerRequest *request){
+    //program = 10; // we should shut off otherwise we can't reboot
+    if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
+    strcpy(requestUrl, "/");
+    if (!request->authenticate("admin", pswd) ) return request->requestAuthentication();
+    request->send_P(200, "text/html", otaIndex); 
+    });
+  server.on("/handleFwupdate", HTTP_POST, [](AsyncWebServerRequest *request){
+    if(checkRemote( request->client()->remoteIP().toString()) ) request->redirect( "/DENIED" );
+    Serial.println("FWUPDATE requested");
+    if( !Update.hasError() ) {
+    toSend="<br><br><center><h2>UPDATE SUCCESS !!</h2><br><br>";
+    toSend +="click here to reboot<br><br><a href='/REBOOT'><input style='font-size:3vw;' type='submit' value='REBOOT'></a>";
+    } else {
+    toSend="<br><br><center><kop>update failed<br><br>";
+    toSend +="click here to go back <a href='/FWUPDATE'>BACK</a></center>";
+    }
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", toSend);
+    response->addHeader("Connection", "close");
+    request->send(response);
+  
+  },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+    //Serial.println("filename = " + filename);
+    if(filename != "") {
+    if(!index){
+      //#ifdef DEBUG
+        Serial.printf("start firmware update: %s\n", filename.c_str());
+      //#endif
+      //Update.runAsync(true);
+      if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
+        //#ifdef DEBUG
+          Update.printError(Serial);
+        //#endif
+      }
+    }
+    } else {
+      consoleOut("filename empty, aborting");
+//     Update.hasError()=true;
+    }
+    if(!Update.hasError()){
+      if(Update.write(data, len) != len){
+          Serial.println("update failed with error: " );
+          Update.printError(Serial);
+      }
+    }
+    if(final){
+      if(Update.end(true)){
+        Serial.printf("firmware Update Success: %uB\n", index+len);
+      } else {
+        Update.printError(Serial);
+      }
+    }
+  });
 // if everything failed we come here
 server.onNotFound([](AsyncWebServerRequest *request){
   //Serial.println("unknown request");
@@ -272,7 +273,5 @@ server.begin();
 }
 
 void confirm() {
-toSend="<html><body onload=\"setTimeout(function(){window.location.href='";
-toSend+=String(requestUrl);
-toSend+="';}, 3000 );\"><br><br><center><h1>processing<br>your request,<br>please wait</h1></html>";
+toSend="<html><body onload=\"setTimeout(function(){window.location.href='/';}, 3000 );\"><br><br><center><h3>processing<br>your request,<br>please wait</html>";
 }

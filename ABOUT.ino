@@ -36,7 +36,7 @@ void handleAbout(AsyncWebServerRequest *request) {
   int dagen = urens/24;
  
   strcat(page, "<br><table><tr><TH colspan='2'>ESP SYSTEM INFORMATION</th></tr>" );
-  strcat(page, "<tr><td>firmware version<td>ESP-P1METER-v0_1</tr>");
+  strcat(page, "<tr><td>firmware version<td>ESP32C3-P1METER-v0_2c</tr>");
   if ( timeRetrieved ) strcat(page,"<tr><td>time retrieved<td>yes</tr>"); else strcat(page,"<tr><td>time retrieved<td>no</tr>");
   sprintf(temp, "<tr><td>systemtime<td> %d:%d " , hour(), minute());
   switch (dst) {
@@ -50,7 +50,7 @@ void handleAbout(AsyncWebServerRequest *request) {
   strcat(page, temp);
   sprintf(temp, "<tr><td>wifi signalstrength<td>%lddB</td>", WiFi.RSSI());
   strcat(page, temp);
-  sprintf(temp, "<tr><td>ESP CHIP ID nr: <td> %ld</td>", ESP.getChipId() );
+  sprintf(temp, "<tr><td>ESP CHIP ID nr: <td> %ld</td>", getChipId(true) );
   strcat(page, temp);
   sprintf(temp, "<tr><td>Free heap<td> %u bytes</td>", ESP.getFreeHeap() );
   strcat(page, temp);

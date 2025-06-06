@@ -13,7 +13,7 @@ a:link, a:visited { width: 98px;}
 </div>  
 </div>
 <br><br>
-<div id='msect'><kop>ESP P1 METER MENU</kop></div><br><br><br>
+<div id='msect'><kop>ESP32C3 P1 METER MENU</kop></div><br><br><br>
 
 <div id='msect'>
 <table><tr>

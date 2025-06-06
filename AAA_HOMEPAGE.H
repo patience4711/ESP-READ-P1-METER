@@ -1,11 +1,22 @@
-//{ check
+
+//<input type="number" id="invCount" value="%count%" hidden>
+//<script type="text/javascript" src="SECURITY"></script>
+// <li><a href='/LOGPAGE'>log</a></li>
+  //<li><a href='/INFOPAGE'>info</a></li>  
+
+//  <li><a href='/ABOUT'>about</a></li>
+//  <li><a href='/LOGPAGE'>journal</a></li>
+  
+//  <li id="ml" style='float:right; display:none'><a id='haha' href='/MENU'>menu</a></li>
+//<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 const char P1_HOMEPAGE[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head>
 
 <meta charset='utf-8' name="viewport" content="width=device-width, initial-scale=1">
 <title>ESP-P1 METER</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="stylesheet" type="text/css" href="/STYLESHEET">
+<link rel="stylesheet" type="text/css" href="/STYLESHEET">  
+
 
 <style>
 body {
@@ -112,13 +123,12 @@ tr {height:35px;}
 </head>
 
 <body onload='loadScript()'>
+
 <div id='msect'>
 <div id='menu'>
-
 <a id="ml" href='/MENU' style='float:right; display:none'>menu</a>
 </div>
 </div>
-
 <div id='msect'>
   <kop>ESP P1 METER</kop>
 </div>
@@ -305,5 +315,3 @@ if (!!window.EventSource) {
 }
 
 )=====";
-
-//}

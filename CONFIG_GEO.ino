@@ -72,6 +72,4 @@ void zendPageGEOconfig( AsyncWebServerRequest *request ) {
 //      wifiConfigsave();
 //
 //      actionFlag=25; // recalculate with these settings 
-//}
-
-//}
+//} 

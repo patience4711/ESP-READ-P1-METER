@@ -1,4 +1,3 @@
-//{ check
 const char SECURITY[] PROGMEM = R"=====(
 var message = "viewing this page is disabled!";
 function rtclickcheck(keyp){ if (navigator.appName == "Netscape" && keyp.which == 3){ alert(message); return false; }
@@ -6,7 +5,6 @@ if (navigator.appVersion.indexOf("MSIE") != -1 && event.button == 2) { alert(mes
 document.onmousedown = rtclickcheck;
 )=====";
 
-//<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 const char HTML_HEAD[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head><meta charset='utf-8'>
 <title>ESP-P1 METER</title>
@@ -31,6 +29,7 @@ document.getElementById("help").style.display = "block";
 </script>
 </head>
 )=====";
+
 const char STYLESHEET[] PROGMEM = R"=====(
 body { background: linear-gradient(#e8f5f7, #caf5fb); color:navy; font-family:'lato',Verdana,Sans-serif;font-size:16px;}
 .divstijl { background: linear-gradient(#e8edc8, #c8eaed); padding:0px 0px 0px 0px; width: 50vw; height: 99%; }
@@ -154,45 +153,66 @@ kop { font-size: 7vw;}
 
 )=====";
 
+
 //<script type='text/javascript'>setTimeout(function(){ window.location.href='/SW=BACK';}, 3000 ); </script>
 
-const char CONFIRM[] PROGMEM = R"=====(
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>ESP-ECU</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
-</head>
-<body>
-<script type='text/javascript'>setTimeout(function(){ 
-  window.location.href='/SW=BACK';}, 3000 ); </script>
+//const char CONFIRM[] PROGMEM = R"=====(
+//<!DOCTYPE html><html><head><meta charset='utf-8'>
+//<title>ESP-ECU</title>
+//<meta name="viewport" content="width=device-width, initial-scale=1">
+//<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
+//</head>
+//<body>
+//<script type='text/javascript'>setTimeout(function(){ 
+//  window.location.href='/SW=BACK';}, 3000 ); </script>
 
-<center><kop>PROCESSING YOUR REQUEST...</kop>
-<br><br>
-<div class='divstijl'>
-Please wait while your request is being executed.<br><br>
-If applicable, the data is saved and a reboot follows.<br><br>
-Visit the log page or information page for more information<br><br>
-This page will close automatically when the command is executed.<br>
+//<center><kop>PROCESSING YOUR REQUEST...</kop>
+//<br><br>
+//<div class='divstijl'>
+//Please wait while your request is being executed.<br><br>
+//If applicable, the data is saved and a reboot follows.<br><br>
+//Visit the log page or information page for more information<br><br>
+//This page will close automatically when the command is executed.<br>
+//
+//<br><br>
+//<br>You will then return to the homepage. Check if the settings are correct.</center></div>
+//</body></html>
+//)=====";
 
-<br><br>
-<br>You will then return to the homepage. Check if the settings are correct.</center></div>
-</body></html>
-)=====";
-
-const char CONFIRM_IP[] PROGMEM = R"=====(
-<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>ESP-ECU</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
-</head>
-<body style='font-size:16px;'>
-<script type='text/javascript'>setTimeout(function(){ window.location.href='http://{adres0}/'; }, 6000 ); </script>
-<center>
-<h1>SAVE IP SETTINGS</h1><div class='lijnstijl'></div><br><br><div class='divstijl'>
-The IP settings are saved. <br><br>
-Your Esp device is going to reboot. <strong>Wait util the led has blinked 3 times!</strong><br><br>
-</body></html>
-)=====";
+//const char CONFIRM_IP[] PROGMEM = R"=====(
+//<!DOCTYPE html><html><head><meta charset='utf-8'>
+//<title>ESP-ECU</title>
+//<meta name="viewport" content="width=device-width, initial-scale=1">
+//<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
+//</head>
+//<body style='font-size:16px;'>
+//<script type='text/javascript'>setTimeout(function(){ window.location.href='http://{adres0}/'; }, 6000 ); </script>
+//<center>
+//<h1>SAVE IP SETTINGS</h1><div class='lijnstijl'></div><br><br><div class='divstijl'>
+//The IP settings are saved. <br><br>
+//Your Esp device is going to reboot. <strong>Wait util the led has blinked 3 times!</strong><br><br>
+//</body></html>
+//)=====";
+//
+//const char CONFIRM_INV[] PROGMEM = R"=====(
+//<!DOCTYPE html><html><head><meta charset='utf-8'>
+//<title>ESP-ECU</title>
+//<meta name="viewport" content="width=device-width, initial-scale=1">
+//<link rel="stylesheet" type="text/css" href="/STYLESHEET_HOME">
+//</head>
+//<body style='font-size:16px;'>
+//<script type='text/javascript'>setTimeout(function(){ window.location.href='/INV_CONFIG';}, 6000 ); </script>
+//<center>
+//<h1>PROCESSING THE INVERTER DATA...</h1><div class='lijnstijl'></div><br><br>
+//<div class='divstijl'>
+//The inverterdata are saved.<br><br>
+//In a moment the device is going to reboot.<br><br> 
+//You will be redirected to the inverter config page. 
+//
+//<br><br>
+//</div>
+//<br><br> <a href='/SW=BACK'><span class='close'>&times;</span></a></body></html>
+//)=====";
 
 
 const char UPDATE_FORM[] PROGMEM = R"=====(
@@ -220,6 +240,60 @@ document.getElementById('hiddendiv').innerHTML="<marquee><kop>updating firmware,
 </div></center></body></html>    
 )=====";
 
+//const char WAIT_PAIR[] PROGMEM = R"=====(
+//<!DOCTYPE html><html><head><meta charset='utf-8'>
+//</head><body onload="loadScript()">
+//<center><br><br><h2>PAIRING INVERTER {#}</h2>
+//<br><br><br>
+//<div id="marq" style='margin: 50px; width: 40%; background:#e7f2bd;'>
+//<marquee><h3>pairing, do not interrupt .....</h3></marquee>
+//</div>
+//<div id="hiddenSucc" style="display:none"<br><br><br>
+//<h3>The pairing succeeded.
+//<br><br><br><a href="/LOGPAGE">click here</a></h3>
+//</div>
+//<div id="hiddenFail" style="display:none"<br><br><br>
+//<h3>The pairing failed.
+//<br><br><br><a href="/LOGPAGE">click here</a></h3>
+//</div>
+//
+//<script>
+//function loadScript() {
+//  getData();
+//  loadData();
+//}
+//
+//setInterval(function loadData() {
+// getData()
+//},9000);
+//
+//function getData() {
+//  var xhttp = new XMLHttpRequest();
+//  xhttp.onreadystatechange = function() {
+//    if (this.readyState == 4 && this.status == 200) {
+//      var antwoord = this.responseText;
+//      var obj = JSON.parse(antwoord);
+//      var invID = obj.invID;
+//      
+//      if( invID != "1111" ) {
+//          if( invID == "0000" ) {
+//            document.getElementById("marq").style.display = "none";
+//            document.getElementById("hiddenFail").style.display = "block";
+//            setTimeout(function(){ window.location.href='/'; }, 5000 );
+//          } else {
+//            document.getElementById("marq").style.display = "none";
+//            document.getElementById("hiddenSucc").style.display = "block";
+//            setTimeout(function(){ window.location.href='/'; }, 5000 );
+//          }
+//       }
+//    }
+//  }
+//  xhttp.open("GET", "get.Paired", true);
+//  xhttp.send();
+//}
+//</script>
+//</body></html>    
+//)=====";
 
 const char REQUEST_DENIED[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head><meta charset='utf-8'>
@@ -380,5 +454,3 @@ tr {width:94vw;}
 %rows%
 </table></center></div></body></html>
 )=====";
-
-//}

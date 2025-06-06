@@ -89,8 +89,8 @@ void zendPageBasis(AsyncWebServerRequest *request) {
 //void handleBasisconfig(AsyncWebServerRequest *request) { // form action = handleConfigsave
 //// verzamelen van de serverargumenten   
 //  strcpy(userPwd, request->arg("pw1").c_str());
-//  //strcpy( dom_Address  , request->getParam("domAdres")  ->value().c_str() );
-//  //dom_Port    =          request->arg("domPort").toInt();
+//  strcpy( dom_Address  , request->getParam("domAdres")  ->value().c_str() );
+//  dom_Port    =          request->arg("domPort").toInt();
 //  gas_Idx     =          request->arg("gasidx").toInt();
 //  el_Idx      =          request->arg("elidx").toInt();
 //  meterType   =          request->arg("mtype").toInt(); //values are 0 1 2 
@@ -104,7 +104,5 @@ void zendPageBasis(AsyncWebServerRequest *request) {
 // 
 //
 //  //if(USB_serial) Serial.println("basisconfig saved");
-//  //actionFlag=25; // recalculates the time with these new values 
-//}
-
+//  actionFlag=25; // recalculates the time with these new values 
 //}

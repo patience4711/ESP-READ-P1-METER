@@ -33,27 +33,27 @@ String putReport(const String& var)
         if(next == 13) next = 0; // the last iteration is thus 0 - 11   
 //        prev = x-1;
 //        if(prev == 0) prev = 12; 
-         consoleLog("x = " + String(x));
+         Serial.println("x = " + String(x));
         //if there are no values we skip this whole iteration
         if ( MVALS[x].EC_LT != 0 || MVALS[x].EC_HT != 0 || MVALS[x].ER_LT != 0 || MVALS[x].ER_HT != 0 || MVALS[x].mGAS != 0 )
         { 
-            consoleLog("found values in month " + String(x));
+            Serial.println("found values in month " + String(x));
             // we are in the month 8 and have values
             //check if there are values in the next month and they are greater
             // if we have greater values of the next month, we could calculate
             if( MVALS[next].EC_LT != 0 &&  MVALS[next].EC_LT > MVALS[x].EC_LT ) { 
-            consoleLog("also values in next month " + String(next));
+            Serial.println("also values in next month " + String(next));
                    econ_lt = MVALS[next].EC_LT - MVALS[x].EC_LT;
                    // this would be over the current month
             } else {
             // we have values in x but not (greater) values in next
             // we can check if the current values are greater than the ones in the file
             // we can calculate a todate value that would be over the current mont 
-            consoleLog("no values in next month so calculate todate"); 
+            Serial.println("no values in next month so calculate todate"); 
                if (ECON_LT > MVALS[x].EC_LT ) {
                  econ_lt = ECON_LT - MVALS[x].EC_LT; //
                } else { 
-                consoleLog("could not calculate todate for " + String(x));}
+                Serial.println("could not calculate todate for " + String(x));}
             }  
           
             if( MVALS[next].EC_HT != 0 &&  MVALS[next].EC_HT > MVALS[x].EC_HT ) { 
@@ -81,7 +81,7 @@ String putReport(const String& var)
                if (mGAS > MVALS[x].mGAS ) mgas = mGAS - MVALS[x].mGAS; //
             }             
           
-       } else { consoleLog("skipped line " + String(x));}    
+       } else { Serial.println("skipped line " + String(x));}    
         // for each month we print a line
         // we want the current month alwas be the last one
         sprintf(temp, "<tr id=\"row%.d\"><td>%.d<td>%.2f<td>%.2f<td>%.2f<td>%.2f<td>%.2f</td></tr>", x, x, econ_lt, econ_ht, eret_lt, eret_ht, mgas);  
@@ -93,6 +93,7 @@ String putReport(const String& var)
         strcat(report1, report2); 
         //consoleLog(String(report));
         consoleLog("length = " + String(strlen(report2)));
+        //swap_to_hw();
         return report1;
         }
 
@@ -100,33 +101,17 @@ return String();
 }
 
 
-void printFiles() {  
-      //swap_to_usb();
-      consoleLog(" print existing files ******");
-      for (int x=1; x < 13; x++) 
-      {
-          String bestand = "/monthly_vals" + String(x) + ".str";
-          printStruct(bestand, x);
-      }
-        consoleLog("the current values are:");
-        consoleLog("ECON_LT = " + String(ECON_LT));     
-        consoleLog("ECON_HT = " + String(ECON_HT));
-        consoleLog("ERET_LT = " + String(ERET_LT));
-        consoleLog("ERET_HT = " + String(ERET_HT));
-        consoleLog("mGAS = " + String(mGAS));     
-     
-     //swap_to_hw();
-}
+
 
 void printStruct( String bestand, int what ) {
 //input String bestand = "/Inv_Prop" + String(x) + ".str";
       //String bestand = bestand + String(i) + ".str"
       //readStruct(bestand); is done at boottime
-        consoleLog("content of MVALS[" + String(what) + "]");
-        consoleLog("EC_LT = " + String(MVALS[what].EC_LT));     
-        consoleLog("EC_HT = " + String(MVALS[what].EC_HT));
-        consoleLog("ER_LT = " + String(MVALS[what].ER_LT));
-        consoleLog("ER_HT = " + String(MVALS[what].ER_HT));
-        consoleLog("mGAS = " + String(MVALS[what].mGAS));
+        Serial.println("content of MVALS[" + String(what) + "]");
+        Serial.println("EC_LT = " + String(MVALS[what].EC_LT));     
+        Serial.println("EC_HT = " + String(MVALS[what].EC_HT));
+        Serial.println("ER_LT = " + String(MVALS[what].ER_LT));
+        Serial.println("ER_HT = " + String(MVALS[what].ER_HT));
+        Serial.println("mGAS = " + String(MVALS[what].mGAS));
 
 }

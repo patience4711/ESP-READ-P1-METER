@@ -2,15 +2,17 @@
 
 // als er geen spiffs bestand is dan moet hij eigenlijk altijd een ap openenen
 void SPIFFS_read() {
-  //DebugPrintln("mounting FS...");
- if (LittleFS.begin()) {
-    //DebugPrintln("mounted file system");
-
-       if( file_open_for_read("/logChar.txt") ) {
-                Serial.println("\nread logChar.txt\n");
-          } else {
-             Serial.println("\nlogChar.txt not opened\n");
-          }
+          //DebugPrintln("mounting FS...");
+          if (!SPIFFS.begin(true)) {
+          consoleOut("could not mount file system");
+          return;
+       }
+       consoleOut("reading SPIFFS");
+//       if( file_open_for_read("/logChar.txt") ) {
+//                Serial.println("\nread logChar.txt\n");
+//          } else {
+//             Serial.println("\nlogChar.txt not opened\n");
+//          }
        if( file_open_for_read("/testFile.txt") ) {
                 Serial.println("\nread testFile\n");
                 testTelegram = true;
@@ -18,28 +20,23 @@ void SPIFFS_read() {
              Serial.println("\ntestFile.txt not opened\n");
           }
        if( file_open_for_read("/wificonfig.json") ) {
-                Serial.println("\nread wificonfig\n");
+                Serial.println("read wificonfig\n");
           } else {
              Serial.println("wificonfig.json not opened\n");
           }
        
        if( file_open_for_read("/basisconfig.json") ) {     
-             Serial.println("\nread basisconfig\n");
+             Serial.println("read basisconfig\n");
           } else {
           Serial.println("basisconfig.json not opened\n");
         } 
        if( file_open_for_read("/mqttconfig.json") ) {     
-             Serial.println("\nmqttconfig read");
+             Serial.println("mqttconfig read");
           } else {
           Serial.println("mqttconfig.json not opened");
         }         
-//       if( file_open_for_read("/domconfig.json") ) {     
-//             Serial.println("domconfig read");
-//          } else {
-//          Serial.println("domconfig.json not opened");
-//        } 
   
-  } 
+  //} else {    consoleOut("mounted file system"); }
  // einde spiffs lezen 3 bestanden
 
 }  
@@ -47,7 +44,7 @@ void SPIFFS_read() {
 // writeStruct(bestand, month); // alles opslaan in SPIFFS
 
 void writeStruct( String whichfile, int mnd) {
-      File configFile = LittleFS.open(whichfile, "w");
+      File configFile = SPIFFS.open(whichfile, "w");
       // f.i. monthly_vals0.str
         if (!configFile)
            {
@@ -62,7 +59,7 @@ void writeStruct( String whichfile, int mnd) {
 
 bool readStruct(String whichfile ,int mnd) {
       //input = //mvalues_0.str
-      File configFile = LittleFS.open(whichfile, "r");
+      File configFile = SPIFFS.open(whichfile, "r");
 
       Serial.print(F( "readStruct mnd = ")); Serial.println( String(mnd) );  
         if (!configFile)
@@ -82,26 +79,9 @@ bool readStruct(String whichfile ,int mnd) {
 //             save data in SPIFFS                         *  
 // ****************************************************************************
 
-void logCharsave() {
-   //DebugPrintln("saving config");
-    if( LittleFS.exists("/logChar.txt") ){
-      Serial.println("logChar exists, we don't overwrite it");
-      return;
-    }
-    DynamicJsonDocument doc(150);
-    JsonObject json = doc.to<JsonObject>();   
-    json["content"] = logChar;
-
-    File configFile = LittleFS.open("/logChar.txt", "w");
-    serializeJson(json, Serial);
-    Serial.println(F("")); 
-    serializeJson(json, configFile);
-    configFile.close();
-}
-
 void testFilesave() {
    //DebugPrintln("saving config");
-    if( LittleFS.exists("/testFile.txt") ){
+    if( SPIFFS.exists("/testFile.txt") ){
       Serial.println("testfile exists, we don't overwrite it");
       return;
     }
@@ -109,7 +89,7 @@ void testFilesave() {
     JsonObject json = doc.to<JsonObject>();   
     json["content"] = teleGram;
 
-    File configFile = LittleFS.open("/testFile.txt", "w");
+    File configFile = SPIFFS.open("/testFile.txt", "w");
     serializeJson(json, Serial);
     Serial.println(F("")); 
     serializeJson(json, configFile);
@@ -131,14 +111,13 @@ void wifiConfigsave() {
     json["zomerTijd"] = zomerTijd;
     Serial.println("spiffs save securityLevel = " + String(securityLevel));
     json["securityLevel"] = securityLevel;
-    File configFile = LittleFS.open("/wificonfig.json", "w");
-    if (!configFile) {
-    Serial.println("open basisconfig failed");
-    }
+    File configFile = SPIFFS.open("/wificonfig.json", "w");
+    if (!configFile) Serial.println ("open wificonfig.json failed");
     if(diagNose){ 
-    serializeJson(json, Serial);
-    Serial.println("");     
-    } 
+      serializeJson(json, Serial);
+      Serial.println("");     
+    }
+    Serial.println(F("")); 
     serializeJson(json, configFile);
     configFile.close();
 }
@@ -153,13 +132,13 @@ void basisConfigsave() {
     json["pollFreq"] = pollFreq;
     json["Polling"] = Polling;
     json["diagNose"] = diagNose;    
-    File configFile = LittleFS.open("/basisconfig.json", "w");
+    File configFile = SPIFFS.open("/basisconfig.json", "w");
     if (!configFile) {
     Serial.println("open basisconfig failed");
     }
     if(diagNose){ 
-    serializeJson(json, Serial);
-    Serial.println("");     
+      serializeJson(json, Serial);
+      Serial.println("");     
     }
     serializeJson(json, configFile);
     configFile.close();
@@ -179,7 +158,7 @@ void mqttConfigsave() {
     json["Mqtt_Password"] = Mqtt_Password;
     json["Mqtt_Clientid"] = Mqtt_Clientid;    
     json["Mqtt_Format"] = Mqtt_Format;    
-    File configFile = LittleFS.open("/mqttconfig.json", "w");
+    File configFile = SPIFFS.open("/mqttconfig.json", "w");
     if (!configFile) {
     Serial.println("open mqttconfig failed");
     }
@@ -194,34 +173,29 @@ void mqttConfigsave() {
 
 
 bool file_open_for_read(String bestand) {
-      //DebugPrint("we are in file_open_for_read, bestand = "); //DebugPrintln(bestand); 
-      if (!LittleFS.exists(bestand)) return false;
+      Serial.print("we are in file_open_for_read, bestand = "); Serial.println(bestand); 
+      if (!SPIFFS.exists(bestand)) return false;
       
       //file exists, reading and loading
       //DebugPrintln("bestand bestaat");
-        File configFile = LittleFS.open(bestand, "r");
+        File configFile = SPIFFS.open(bestand, "r");
         if (!configFile) return false;
-        Serial.println("opened config file" + bestand);
+        
+        //DebugPrint("opened config file"); //DebugPrintln(bestand);
            size_t size = configFile.size();
           // Allocate a buffer to store contents of the file.
            std::unique_ptr<char[]> buf(new char[size]);
            configFile.readBytes(buf.get(), size);
            DynamicJsonDocument doc(1024);
            auto error = deserializeJson(doc, buf.get());
-           serializeJson(doc, Serial); Serial.println(F(""));
+           serializeJson(doc, Serial); Serial.println(F("")); // always serialprint this
              if (error) return false; 
               //DebugPrintln("parsed json");
-              String jsonStr = ""; // we print the json object to a string
-            // now we can check if an entry exists
-            // otherwise a crash occurs
-                //serializeJson(doc, Serial);
-                serializeJson(doc, jsonStr);
+              String jsonStr = ""; // we printen het json object naar een string
+            // nu kunnen we eerst controleren of een bepaalde entry bestaat
+            // zoniet slaan we die over anders crasht de ESP
+              serializeJson(doc, jsonStr);
 
-            if (bestand == "/logChar.txt") {
-                      if(jsonStr.indexOf("content") > 0){ strcpy(logChar, doc["content"]);}
-                      Serial.println("\n\nspiffs logChar = " + String(logChar));          
-            }
-            
             if (bestand == "/testFile.txt") {
                       if(jsonStr.indexOf("content") > 0){ strcpy(teleGram, doc["content"]);}
                       Serial.println("\n\nspiffs testFile = " + String(teleGram));          

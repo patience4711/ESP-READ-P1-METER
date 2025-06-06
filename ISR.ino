@@ -49,7 +49,7 @@ ICACHE_RAM_ATTR void isr() {
      { 
      endtime = millis();
      }
-     wdt_disable(); //othersise it's going to reset
+     //wdt_disable(); //otherwise it's going to reset
      //first test if the button is still pressed
      //otherwise it's going to reset after a clumpsy operation
      val = digitalRead(knop);

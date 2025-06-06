@@ -1,4 +1,4 @@
-//{ check
+//<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
 const char CONSOLE_HTML[] PROGMEM = R"=====(
 <!DOCTYPE html><html><head>
@@ -35,16 +35,17 @@ document.getElementById("help").style.display = "none";
 <body>
   <div id='help'>
   <span class='close' onclick='sl();'>&times;</span><h3>CONSOLE COMMANDS</h3>
-  <b>10;FILES: </b> show filesystem<br><br>
-  <b>10;DELETE=filename: </b> delete a file.<br><br>
-  <b>10;TESTDEL: </b> delete the testfiles<br><br>
-  <b>10;POLL: </b> poll the p1 meter now <br><br>
-  <b>10;DIAG: </b> show debug messages in console<br><br>
-  <b>10;TESTMQTT: </b>sends a mqtt testmessage<br><br>
-  <b>10;FORCE: </b>set some values to test with<br><br>     
-  <b>10;MONTH: </b> write values of this month to file<br><br>
-  <b>10;DECODE: </b>decode the telegram in testfile<br><br> 
-  <b>10;CLEAR: </b> clear console window<br><br> 
+  <b>PRINTOUT-SPIFFS: </b> show filesystem<br><br>
+  <b>DELETE-FILE=filename: </b> delete a file.<br><br>
+  <b>TEST-Serial: </b> Serial loopback test.<br><br>
+  <b>DELETE-TESTFILES: </b> delete the testfiles<br><br>
+  <b>POLL-METER: </b> poll the p1 meter now <br><br>
+  <b>TEST-MOSQUITTO: </b>sends a mqtt testmessage<br><br>
+  <b>FORCE-VALUES: </b>set some values to test with<br><br>     
+  <b>WRITE-MONTH: </b> write values of this month to file<br><br>
+  <b>DECODE-TEST: </b>decode the telegram in testfile<br><br>
+  <b>SHOW-STARTLOG: </b>print the startlog<br><br>   
+  <b>CLEAR-CONSOLE: </b> clear console window<br><br> 
   </div>
 
 <div id='msect'>
@@ -54,6 +55,8 @@ document.getElementById("help").style.display = "none";
 <a href='#'><input type="text" placeholder="type here" id="tiep"></a>
 </div>
 </div>  
+<br>  
+<div id='msect'>
 <br>  
 <div id='msect'>
   <div class='divstijl' style='height:84vh; border:1px solid; padding-left:10px;'>
@@ -150,19 +153,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   {
       data[len] = 0;
             
-           if (strncasecmp(txBuffer+3,"HEALTH",6) == 0) {  
-              ws.textAll("check zb system");
-              actionFlag=44; // perform the healthcheck
-              diagNose=true;
-              return;             
-          } else          
-
-//           if (strncasecmp(txBuffer+3,"SERIAL",6) == 0) {  
-//              ws.textAll("test serial loopback, attention, fit the wire!!");
-//              actionFlag=29; // 
+//           if (strncasecmp(txBuffer+3,"HEALTH",6) == 0) {  
+//              ws.textAll("check zb system");
+//              actionFlag=44; // perform the healthcheck
 //              diagNose=true;
 //              return;             
-//          } else 
+//          } else          
 
  // ************  test mosquitto *******************************          
            if (strncasecmp(txBuffer+3,"TESTMQTT",8) == 0) {  
@@ -181,8 +177,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
           } else 
             if (strncasecmp(txBuffer+3,"TESTDEL",7) == 0) {  
               ws.textAll("going to delete testfiles ");
-              if (LittleFS.exists("/logChar.txt")) LittleFS.remove("/logChar.txt");
-              if (LittleFS.exists("/testFile.txt")) LittleFS.remove("/testFile.txt");
+              if (SPIFFS.exists("/testFile.txt")) SPIFFS.remove("/testFile.txt");
               actionFlag = 46; // show the existing files
               return;             
           
@@ -193,12 +188,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
               String bestand="";
               for(int i=10;  i<len+1; i++) { bestand += String(txBuffer[i]); }
                ws.textAll("bestand = " + bestand); 
-              if (LittleFS.exists(bestand)) 
+              if (SPIFFS.exists(bestand)) 
               {
                   ws.textAll("going to delete file " + bestand); 
                   if(bestand.indexOf("Inv_Prop") == -1 ) 
                   {
-                      LittleFS.remove(bestand);
+                      SPIFFS.remove(bestand);
                       ws.textAll("file " + bestand + " removed!"); 
                   } else {
                       ws.textAll("inverterfile not removed, use 10;erase!"); 
@@ -241,12 +236,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
      
       } else      
       
-      if (strncasecmp(txBuffer+3, "DECODE",6) == 0) 
-      // decode the current telegram
-      {
-          actionFlag = 28;
-          ws.textAll("going to decode the telegram") ;  
-      } else  
+//      if (strncasecmp(txBuffer+3, "DECODE",6) == 0) 
+//      // decode the current telegram
+//      {
+//          actionFlag = 28;
+//          ws.textAll("going to decode the telegram") ;  
+//      } else  
       
       if (strncasecmp(txBuffer+3, "STARTLOG",8) == 0) 
       //show the testresults at boot
@@ -262,17 +257,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
           writeMonth(month() );  
           //ws.textAll("MVALS[8].EC_LT = " + String(MVALS[8].EC_LT)); 
           //ws.textAll("MVALS[8].ER_HT = " + String(MVALS[8].ER_HT));
-      } else
-
-     
-      if (strncasecmp(txBuffer+3, "DIAG",4) == 0) // normal operation
-      {
-         if(diagNose) {
-          diagNose = false;
-         } else {
-          diagNose= true;
-         } 
-          ws.textAll("set diagnose to " + String(diagNose) );  
+ 
      
       } else {
 
@@ -282,6 +267,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   
   }
 }
+
 
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
              void *arg, uint8_t *data, size_t len) {
@@ -307,5 +293,3 @@ void initWebSocket() {
   ws.onEvent(onEvent);
   server.addHandler(&ws);
 }
-
-//}

@@ -8,27 +8,29 @@
  */
 
 void meterPoll() {
-  Serial.println("meterPoll");
+  consoleLog("polling the meter");
   // if we don't have the testfiles we write them (in decode)
+   // the rxpin on the meter should be pulled high, we do this with pin gpio5  (P1_ENABLE) 
   digitalWrite(P1_ENABLE, HIGH); 
    if( read_into_array() ) {
       //we have a telegram
-      
+      ledblink(3,300);
       digitalWrite(P1_ENABLE, LOW);
       decodeTelegram(); 
-      sendMqtt(false); // send el
-      sendMqtt(true); // send gas
-    } 
-    // when done, write the logfile if not exists
-    strcat(logChar, "\npoll done");
-    if( !LittleFS.exists("/logChar.txt") ) {
-          logCharsave(); // an existing logfile is not overwritten
+      sendMqtt(false);
+      sendMqtt(true);
+    } else {
+    //consoleOut("no telegram received");
+    consoleLog("no telegram received");
+    return;
     }
+    // when done, write the logfile if not exists
+
     // if the testFile still not exists we write it now
-    if( !LittleFS.exists("/testFile.txt") ) {
+    if( !SPIFFS.exists("/testFile.txt") ) {
          testFilesave(); // an existing logfile is not overwritten
     }
-   Serial.println("meterPoll done");
+   consoleLog("meterPoll done");
    digitalWrite(P1_ENABLE, LOW);
 }
 
@@ -38,61 +40,68 @@ bool read_into_array() {
     char inByte[2];
     int Bytes=0;
     polled = false;
-    // start waiting until serial available   
+    // start waiting until serial1 available   
     waitSerialAvailable(5);
-    // waste the serial buffer so that we start reading at the beginning of the telegram    
-    empty_serial();
+    // flush the serial1 buffer so that we start reading at the beginning of the telegram    
+    empty_Serial1();
     // now we wait again until something is avialable
     if ( waitSerialAvailable(5) ) {
-        memset(logChar, 0, sizeof(logChar));
-        delayMicroseconds(250);
+
         memset(teleGram, 0, sizeof(teleGram));
         delayMicroseconds(250);
-        strcat(logChar, "\nstart");
-        while (Serial.available())
+        Serial.println("available on Serial1 : " + String(Serial1.available()));
+        while (Serial1.available())
         {
-              Serial.readBytes(inByte, 1);
+              Serial1.readBytes(inByte, 1);
+              if(diagNose){
+                  if(byteCounter < 7) { 
+                       Serial.println("print the 1st 7 bytes");
+                       Serial.print(inByte[0]);
+                  }
+              }
               byteCounter ++;
               if (inByte[0] == '/') { 
-                    sprintf(rep, "\nfound start at %d", byteCounter);
-                    strcat(logChar,rep);
+                    consoleLog("\nfound start at " + String(byteCounter));
+                    
                     // add this byte to teleGram 
                     strncat(teleGram, inByte, 1); 
                     // now we add the next 650 bytes to teleGram 
                     // until we encounter the endsign
                     for ( int x=0; x < 650; x++) {
-                       Serial.readBytes(inByte, 1);
+                       Serial1.readBytes(inByte, 1);
                        strncat( teleGram, inByte, 1);
                        // catch the endsign
                        if (inByte[0] == '!' ) {
                            consoleLog("found the end sign");
-                           strcat(logChar, "\nend sign");
+
                            // we need to read 4 more bytes (the crc) until the \n and then stop
-                           Serial.readBytes(readCRC, 4);
+                           Serial1.readBytes(readCRC, 4);
                            strcat(teleGram, readCRC);
                            polled = true;
                            return true;
                         }   
                      }
                // if we are here, we have read 650 characters but no endsign found
-               strcat(logChar,"\nfs no end");
+               consoleLog("no endsign found");
                return false;              
            }
 
        // we terminate if more than 2000 bytes read
        if ( byteCounter > 2000 ) {
-            strcat(logChar,"\n fs 2000 terminate");
+            consoleLog("byteCounter over 2000");
             return false;       
            }
         }
    // if we are here, no startssign was found    
-      strcat(logChar, "\nno startsign");
+      consoleLog("no startsign found");
       return false;
    }
+
+  
   // if we are here, no serial data was available
-  strcat(logChar, "\nno data");
+  consoleLog("got no data from serial1");
   return false;
-}  
+}   
 
 void decodeTelegram() {
 /* this function processes the read telegram
@@ -103,7 +112,7 @@ void decodeTelegram() {
         //we have a valid telegram, now we can decode it.
         //if no testfile, we write that first
         // before the teleGram is modyfied
-        if( !LittleFS.exists("/testFile.txt")) {
+        if( !SPIFFS.exists("/testFile.txt")) {
             testFilesave(); // an existing file is not overwritten
         }
          int lengte = strlen(teleGram);
@@ -123,7 +132,6 @@ void decodeTelegram() {
         if(strtol(readCRC, NULL, 16) == calculatedCRC) //do the crc's match
         {
             consoleLog("crc is correct, now extract values..");
-            strcat(logChar, "\ncrc ok");
             extractTelegram();   
             polled = true;
             eventSend(2); // inform the webbpage that there is new data
@@ -133,7 +141,6 @@ void decodeTelegram() {
             return;
         } else {
             consoleLog("crc is wrong, now extract values..");
-            strcat(logChar, "\ncrc false");
             polled=false;
             consoleLog("not polled");
             return;
@@ -214,11 +221,13 @@ void consoleLog(String toLog) {
   {
     ws.textAll(toLog);
     delay(100);
+  } else {
+  Serial.println(toLog);
   }
 }
 
 void sendMqtt(bool gas) {
-// when trus send gas
+
 if(Mqtt_Format == 0) return;  
 
   char Mqtt_send[26]={0};  

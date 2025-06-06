@@ -48,4 +48,4 @@ void handleForms(AsyncWebServerRequest *request) {
 
      // if we are here something was wrong, no parameters found
      request->send(200, "text/html", "no valid form found");
-}    
+}

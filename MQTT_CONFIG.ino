@@ -1,4 +1,5 @@
 //{ check
+//{ check
 const char MQTTCONFIG[] PROGMEM = R"=====(
 <body>
 <script>
@@ -8,7 +9,7 @@ document.getElementById("help").style.display = "none";
 </script>
 <div id='msect'>
   <div id='help'>
-  <span class='close' onclick='sl();'>&times;</span>
+  <span class='close' onclick='sluit()'>&times;</span>
   <b>mosquitto message format:</b><br>
   <b>f0:</b> mosquitto disabled<br><br>  
   <b>f1:</b> {"idx":123,"nvalue":0,"svalue":"ECON_LT,ECON_HT,ERET_LT,ERET_HT,PACTUAL_CON,PACTUAL_RET);"}<br>
@@ -76,7 +77,7 @@ webPage += FPSTR(MQTTCONFIG);
  
 webPage.replace("{mqttAdres}",    String(Mqtt_Broker)   );
 webPage.replace("{mqttPort}",     String(Mqtt_Port)     );
-String intopic = "ESP-P1METER-" + String(ESP.getChipId()) + "/in";
+String intopic = "ESP-P1METER-" + String(getChipId(true)) + "/in";
 webPage.replace("{mqttinTopic}",  intopic  );
 webPage.replace("{mqttoutTopic}", String(Mqtt_outTopic) );
 webPage.replace("{domg}",         String(gas_Idx) );
@@ -122,7 +123,6 @@ switch (Mqtt_Format) {
 //
 //  //DebugPrintln("saved mqttconfig");
 //  mqttConfigsave();  // 
-//  actionFlag=24; // reconnect with these settings  
+//  actionFlag=24; // reconnect with these settings
+//  
 //}
-
-//} check
