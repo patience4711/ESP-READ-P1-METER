@@ -36,15 +36,9 @@ document.getElementById("help").style.display = "none";
   <div id='help'>
   <span class='close' onclick='sl();'>&times;</span><h3>CONSOLE COMMANDS</h3>
   <b>PRINTOUT-SPIFFS: </b> show filesystem<br><br>
-  <b>DELETE-FILE=filename: </b> delete a file.<br><br>
-  <b>TEST-Serial: </b> Serial loopback test.<br><br>
-  <b>DELETE-TESTFILES: </b> delete the testfiles<br><br>
+  <b>DELETE-FILE=/filename: </b> delete a file.<br><br>
   <b>POLL-METER: </b> poll the p1 meter now <br><br>
   <b>TEST-MOSQUITTO: </b>sends a mqtt testmessage<br><br>
-  <b>FORCE-VALUES: </b>set some values to test with<br><br>     
-  <b>WRITE-MONTH: </b> write values of this month to file<br><br>
-  <b>DECODE-TEST: </b>decode the telegram in testfile<br><br>
-  <b>SHOW-STARTLOG: </b>print the startlog<br><br>   
   <b>CLEAR-CONSOLE: </b> clear console window<br><br> 
   </div>
 
@@ -153,15 +147,10 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   {
       data[len] = 0;
             
-//           if (strncasecmp(txBuffer+3,"HEALTH",6) == 0) {  
-//              ws.textAll("check zb system");
-//              actionFlag=44; // perform the healthcheck
-//              diagNose=true;
-//              return;             
-//          } else          
+
 
  // ************  test mosquitto *******************************          
-           if (strncasecmp(txBuffer+3,"TESTMQTT",8) == 0) {  
+           if (strcasecmp(txBuffer,"TEST-MOSQUITTO") == 0) {  
               ws.textAll("test mosquitto");
               actionFlag=49; // perform the healthcheck
               diagNose=true;
@@ -169,99 +158,48 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
           } else 
 
           // see files
-           if (strncasecmp(txBuffer+3,"FILES",5) == 0) {  
+           if (strcasecmp(txBuffer,"PRINTOUT-SPIFFS") == 0) {  
               //we do this in the loop
               actionFlag = 46;
               return;             
           
           } else 
-            if (strncasecmp(txBuffer+3,"TESTDEL",7) == 0) {  
-              ws.textAll("going to delete testfiles ");
-              if (SPIFFS.exists("/testFile.txt")) SPIFFS.remove("/testFile.txt");
-              actionFlag = 46; // show the existing files
+
+           if (strcasecmp(txBuffer,"CLEAR-CONSOLE") == 0) {  
+              ws.textAll("clearWindow");
               return;             
+          } else           
           
-          } else            
-          
-           if (strncasecmp(txBuffer+3,"DELETE=",7) == 0) {  
-              //input can be 10;DELETE=filename
+           if (strncasecmp(txBuffer,"DELETE-FILE=",12) == 0) {  
+              //input can be DELETE-FILE=filename
+              ws.textAll("len = " + String(len));
               String bestand="";
-              for(int i=10;  i<len+1; i++) { bestand += String(txBuffer[i]); }
+              for(int i=12;  i<len+1; i++) { bestand += String(txBuffer[i]); }
                ws.textAll("bestand = " + bestand); 
               if (SPIFFS.exists(bestand)) 
               {
                   ws.textAll("going to delete file " + bestand); 
-                  if(bestand.indexOf("Inv_Prop") == -1 ) 
                   {
                       SPIFFS.remove(bestand);
                       ws.textAll("file " + bestand + " removed!"); 
-                  } else {
-                      ws.textAll("inverterfile not removed, use 10;erase!"); 
                   }
               
               } else 
               { 
-                 ws.textAll("no such file");
+                 ws.textAll("no such file, forgot the / ??");
               }
               return;                      
  
           } else
 
-      if (strncasecmp(txBuffer+3, "FORCE",5) == 0) // normal operation
-      {
-//long ECON_LT = 0; //Meter reading Electrics - consumption low tariff
-//long ECON_HT = 0; //Meter reading Electrics - consumption high tariff
-//long ERET_LT = 0; //Meter reading Electrics - return low tariff
-//long ERET_HT = 0; //Meter reading Electrics - return high tariff
-//long PACTUAL_CON = 0;  //Meter reading Electrics - Actual consumption
-//long PACTUAL_RET = 0;  //Meter reading Electrics - Actual return
-//long mGAS = 0;  //Meter reading Gas
-//long prevGAS = 0;
-          
-          ECON_LT = 51.111; //kwh
-          ECON_HT = 11.222;
-          ERET_LT = 26.333;
-          ERET_HT = 17.444;
-          PACTUAL_CON = 345.000;
-          PACTUAL_RET = 565.000;
-          mGAS = 17.713;
-          ws.textAll("values forced") ;  
-     
-      } else 
-
-      if (strncasecmp(txBuffer+3, "POLL",4) == 0) 
+      if (strcasecmp(txBuffer, "POLL-METER") == 0) 
       {
           actionFlag = 26;
           ws.textAll("going to poll the meter") ;  
      
-      } else      
+      } else {      
       
-//      if (strncasecmp(txBuffer+3, "DECODE",6) == 0) 
-//      // decode the current telegram
-//      {
-//          actionFlag = 28;
-//          ws.textAll("going to decode the telegram") ;  
-//      } else  
       
-      if (strncasecmp(txBuffer+3, "STARTLOG",8) == 0) 
-      //show the testresults at boot
-      {
-          actionFlag = 27;
-          ws.textAll("going to show the debugfiles") ;  
-      } else 
-      
-     
-      if (strncasecmp(txBuffer+3, "MONTH",5) == 0) 
-      {
-          ws.textAll("write the data into current month") ;
-          writeMonth(month() );  
-          //ws.textAll("MVALS[8].EC_LT = " + String(MVALS[8].EC_LT)); 
-          //ws.textAll("MVALS[8].ER_HT = " + String(MVALS[8].ER_HT));
- 
-     
-      } else {
-
-       
        ws.textAll("unknown command"); 
       }
   
