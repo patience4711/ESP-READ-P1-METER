@@ -130,7 +130,7 @@ tr {height:35px;}
 </div>
 </div>
 <div id='msect'>
-  <kop>ESP P1 METER</kop>
+  <kop>ESP32C3 P1 METER</kop>
 </div>
 <div id='msect'>
     <div class='divstijl' id='maindiv'>

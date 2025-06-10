@@ -131,7 +131,7 @@ void empty_serial() { // remove any remaining data in serial buffer
 }
 
 void empty_Serial1() { // remove any remaining data in serial buffer
-  while(Serial.available()) {
+  while(Serial1.available()) {
     Serial1.read();
   }
 }
@@ -168,3 +168,17 @@ void showDir() {
         Serial.println("ERET_HT = " + String(ERET_HT));
         Serial.println("mGAS = " + String(mGAS));     
 }
+
+void writeMonth(int maand) {
+  //so if month overflew, the value of end 7 is in 8
+//month goes from 1 - 12 buth the struct from 0 - 12
+// we write all values in the struct with the number of current month -1
+   MVALS[maand].EC_LT = ECON_LT ;
+   MVALS[maand].EC_HT = ECON_HT ;
+   MVALS[maand].ER_LT = ERET_LT ;
+   MVALS[maand].ER_HT = ERET_HT ;
+   MVALS[maand].mGAS    = mGAS;
+// write this in SPIFFS
+   String bestand = "//mvalues_" + String(maand) + ".str"; // month5.str
+   writeStruct(bestand, maand);
+} 
