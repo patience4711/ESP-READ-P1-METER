@@ -9,7 +9,7 @@
 
 void meterPoll() {
   consoleLog("polling the meter");
-  // if we don't have the testfiles we write them (in decode)
+
    // the rxpin on the meter should be pulled high, we do this with pin gpio5  (P1_ENABLE) 
   digitalWrite(P1_ENABLE, HIGH); 
    if( read_into_array() ) {
@@ -26,10 +26,10 @@ void meterPoll() {
     }
     // when done, write the logfile if not exists
 
-    // if the testFile still not exists we write it now
-    if( !SPIFFS.exists("/testFile.txt") ) {
-         testFilesave(); // an existing logfile is not overwritten
-    }
+//    // if the testFile still not exists we write it now
+//    if( !SPIFFS.exists("/testFile.txt") ) {
+//         testFilesave(); // an existing logfile is not overwritten
+//    }
    consoleLog("meterPoll done");
    digitalWrite(P1_ENABLE, LOW);
 }
@@ -53,12 +53,13 @@ bool read_into_array() {
         while (Serial1.available())
         {
               Serial1.readBytes(inByte, 1);
-              if(diagNose){
-                  if(byteCounter < 7) { 
-                       Serial.println("print the 1st 7 bytes");
-                       Serial.print(inByte[0]);
-                  }
-              }
+              // we keep reading until we find the startsign "/"
+//              if(diagNose){
+//                  if(byteCounter < 7) { 
+//                       Serial.println("print the 1st 7 bytes");
+//                       Serial.print(inByte[0]);
+//                  }
+//              }
               byteCounter ++;
               if (inByte[0] == '/') { 
                     consoleLog("\nfound start at " + String(byteCounter));
@@ -112,9 +113,9 @@ void decodeTelegram() {
         //we have a valid telegram, now we can decode it.
         //if no testfile, we write that first
         // before the teleGram is modyfied
-        if( !SPIFFS.exists("/testFile.txt")) {
-            testFilesave(); // an existing file is not overwritten
-        }
+//        if( !SPIFFS.exists("/testFile.txt")) {
+//            testFilesave(); // an existing file is not overwritten
+//        }
          int lengte = strlen(teleGram);
          consoleLog("teleGram length = " + String(lengte));
          
@@ -122,7 +123,7 @@ void decodeTelegram() {
          // the teleGram contains the CRC so we terminate teleGram after the !
          teleGram[lengte - 4] = '\0';
          // now the teleGram is useless for testdecode so:
-         testTelegram = false;
+         //testTelegram = false;
          int calculatedCRC = CRC16(0x0000, (unsigned char *) teleGram, lengte-4); 
          
          consoleLog("the calculated crc = " + String(calculatedCRC));
@@ -140,7 +141,8 @@ void decodeTelegram() {
             sprintf( timeStamp, "%02d/%02d %02d:%02d", day(), month(), hour(), minute() );
             return;
         } else {
-            consoleLog("crc is wrong, now extract values..");
+            consoleLog("crc is wrong, not processed..");
+            failCount++;
             polled=false;
             consoleLog("not polled");
             return;
@@ -224,43 +226,4 @@ void consoleLog(String toLog) {
   } else {
   Serial.println(toLog);
   }
-}
-
-void sendMqtt(bool gas) {
-
-if(Mqtt_Format == 0) return;  
-
-  char Mqtt_send[26]={0};  
-  strcpy(Mqtt_send, Mqtt_outTopic);
-//  if( Mqtt_send[strlen(Mqtt_send)-1] == '/' ) {
-//    strcat(Mqtt_send, String(Inv_Prop[which].invIdx).c_str());
-//  }
-  bool reTain = false;
-  char pan[50]={0};
-  char tail[40]={0};
-  char toMQTT[512]={0};
-
-// the json to p1 domoticz must be something like {"command":"udevice", "idx":1234, "svalue":"lu;hu;lr;hr;ac;ar"}
-// the json to gas {"command":"udevice", "idx":1234, "svalue":"3.45"} 
-//where lu is low tariff usage Wh, hu is high tariff usage  Wh), lr is low tariff return Wh), 
-//hr is high tariff return  Wh, ac is actual power consumption (in W) and ar is actual return W .  
-   switch( Mqtt_Format)  { 
-    case 1: 
-       if(!gas) {
-        snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":0,\"svalue\":\"%.2f;%.2f;%.2f;%.2f;%.2f;%.2f\"}" , el_Idx, ECON_LT*1000 , ECON_HT*1000, ERET_LT*1000, ERET_HT*1000, PACTUAL_CON, PACTUAL_RET);
-       } else {
-        snprintf(toMQTT, sizeof(toMQTT), "{\"idx\":%d,\"nvalue\":0,\"svalue\":\"%.3f;\"}", gas_Idx, mGAS);
-       }
-       break;
-    case 2:
-       snprintf(toMQTT, sizeof(toMQTT), "{\"econ_lt\":%.2f,\"econ_ht\":%.2f,\"eret_ht\":%.2f,\"eret_lt\":%.2f,\"actualp_con\":%.2f,\"actualp_ret\":%.2f,\"gas\":%.3f}" , ECON_LT, ECON_HT, ERET_LT, ERET_HT, PACTUAL_CON, PACTUAL_RET, mGAS);
-       break;
-    case 3:
-       snprintf(toMQTT, sizeof(toMQTT), "field1=%.3f&field2=%.3f&field3=%.3f&field4=%.3f&field5=%.0f&field6=%.0f&field7=%.3f&status=MQTTPUBLISH" ,ECON_LT, ECON_HT, ERET_LT, ERET_HT, PACTUAL_CON, PACTUAL_RET, mGAS);
-       reTain=false;
-       break;
-     }
-
-   // mqttConnect() checks first if we are connected, if not we connect anyway
-   if(mqttConnect() ) MQTT_Client.publish ( Mqtt_send, toMQTT, reTain );
 }
