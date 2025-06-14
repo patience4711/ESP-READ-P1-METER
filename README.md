@@ -34,7 +34,7 @@ Download [ESP32C3-P1METER-v0_2](https://github.com/patience4711/ESP32-C3-READ-P1
 
 ## features
 - Simply to connect to your wifi
-- automatic polling or on demand via mqtt or http
+- automatic polling (frequency configurable) or on demand via mqtt or http
 - data can be requested via http and mosquitto
 - data is displayed on the frontpage, as a monthly report.
 - we can see the telegram sent by the meter.
@@ -51,7 +51,7 @@ For info on how to build and use it, please see the <a href='https://github.com/
 
 ## how does it work
 The P1-meter has a so called open collector output. This requires that this port must be pulled up. We do this with a resistor, connected to rx. When th rxpin is pulled high (thus the tx is pulled-up), the meter starts spitting out data. This has the form of a textdocument called a telegram. This document consists of lines that each represent a value.
-It starts with a "/" and ends with a "!". The telegram is spit out when the meter's rx is pulled high and by connecting the resistor, the output is pulled high.
+It starts with a "/" and ends with a "!". The telegram is spit out when the meter's rx is pulled high and by connecting the resistor, the output is also pulled high.
 
 The program makes rx high and reads the serial port until the "/" is found. Now the next incoming bytes are stored in a char array until the endcharacter is encountered. So now we have the full telegram as a char array.
 Next the checksum calculation is done and when the char array is approved, the interesting values can be extracted.
