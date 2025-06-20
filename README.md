@@ -25,7 +25,6 @@ Here are some links to the projects where i got my inspiration (thanks to all fo
  * http://www.gejanssen.com/howto/Slimme-meter-uitlezen/#mozTocId935754
 
 ## compile this sketch
-You can use the provided binary but if you must compile it yourself: Use arduino ide with the esp822 version 2.7.1 installed under boardmanager. The ota updates won't work with other versons.
 <br>Please note: by popular demand I have published the code here but i do not feel responsible for problems as to compiling. Impossible for me to know why it doesn't compile in your situation.
 
 ## downloads
