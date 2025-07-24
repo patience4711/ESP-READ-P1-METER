@@ -47,7 +47,7 @@ Download [ESP32C3-P1METER-v0_2](https://github.com/patience4711/ESP32-C3-READ-P1
 It is nothing more than an esp32c3 device. The other materials are
 - a prepared cable with an 6-pins RJ-11 plug.
 - a 4K7 resistor to pullup the RX pin on the meter.
-For info on how to build and use it, please see the <a href='https://github.com/patience4711/ESP32-C3-READ-P1-METER/wiki)'>WIKI</a>
+For info on how to build and use it, please see the <a href='https://github.com/patience4711/ESP32-C3-READ-P1-METER/wiki'>WIKI</a>
 
 ## how does it work
 The P1-meter has a so called open collector output. This requires that this port must be pulled up to get the signal right. We do this with a resistor, connected to rx. Rx is used to trigger the meter by making it high. So when we want data the tx pin is also high When the rxpin is pulled high. Now the meter starts spitting out data. This has the form of a textdocument called a telegram. This document consists of lines that each represent a value.
