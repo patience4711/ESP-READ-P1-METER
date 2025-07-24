@@ -7,7 +7,7 @@ The purpose of this project is to read data from a so called smart meter (model 
 I know this has been done before but not on this platform. The esp32c3 is very small and can be fed with the 5v of the p1 meter. Since i have other projects which partially use the same software, it is only a small step to adapt it to a new function. So it inherits many nice features from the other projects. 
 
 The program has a lot of smart features. All settings can be done via the webinterface. Because the ESP has only one reliable working hardware serial port, this port is dedicated to the serial communication with the p1 meter. For the debugging we can use a web console just like in my other projects where the serial port is dedicated to the zigbee module. In the console we can call some processes and watch the output. 
-See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki/GENERAL) for information on building it, the working, etc. 
+See the [WIKI](https://github.com/patience4711/ESP-READ-P1-METER/wiki) for information on building it, the working, etc. 
 
 This program runs on a nodemcu but in future there will be a version for ESP32-C3, not all ESP's can be powered by the meter.
 
